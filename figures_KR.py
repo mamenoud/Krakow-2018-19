@@ -14,6 +14,7 @@ import matplotlib.lines as mlines
 import matplotlib.gridspec as gridspec
 import matplotlib.dates as mdates
 import matplotlib.colors as mcolors
+from matplotlib.cm import ScalarMappable
 from matplotlib.animation import FuncAnimation
 import cmocean
 import os, shutil
@@ -45,6 +46,9 @@ web_blue='#333399'
 web_green='#006633'
 web_yellow='#FFFF00'
 web_red='#FF3333'
+web_cyan='#0099FF'
+web_magenta='#FF0099'
+web_orange='#FF6633'
 
 d13C='\u03B4\u00B9\u00B3C'
 dD='\u03B4D'
@@ -86,14 +90,22 @@ strMR_D='MR_ppb - '+dD
 strMR='x(CH4) [ppb]'
 strMRx='1/x(CH4) [1/ppb]'
 
-str_EDGAR='EDGARv50'
-str_TNO='TNO_CAMS_REGv221'
+str_EDGAR='EDGAR v5.0'
+str_TNO='TNO-CAMS v4.2'
 
 col_d13C_mod='d13C'
 col_dD_mod='dD'
 
+col_wd='averageWindDirection'
+col_ws='averageWindSpeed'
+col_errwd='stdWindDirection'
+col_errws='stdWindSpeed'
+
+
+plt.rcParams.update({'font.size': 22, 'font.sans-serif':'Helvetica'})
+
 # x and y must be arrays of n columns
-def correlation(x, y, namex, namey, leg=None):
+def correlation(x, y, namex, namey, leg=None, xy=False):
     
     mar=0.1
 
@@ -102,11 +114,13 @@ def correlation(x, y, namex, namey, leg=None):
     #ymax=np.nanmax(y)+mar*midy
     
     n=len(x)
-    colors=plt.get_cmap('brg', n+1)
+    if n>2:
+        colors=plt.get_cmap('brg', n+1)
+    else:
+        colors=[web_red, vertclair, web_blue]
     fig = plt.subplots(1,1, figsize=(10,10))
     
     for i in range(n):
-        
         midx=(np.nanmax(x[i])-np.nanmin(x[i]))/2
         xmin=np.nanmin(x[i])-mar*midx
         xmax=np.nanmax(x[i])+mar*midx
@@ -125,11 +139,19 @@ def correlation(x, y, namex, namey, leg=None):
             str_lin = 'r= '+str(round(r_value, 3))
     
         #plot the 1:1 line
-        plt.plot(lin11, color='grey', linestyle=':', linewidth=0.7)
-        #plot data points
-        plt.scatter(y=y[i], x=x[i], color=colors(i), marker='x')
-        #plot the regression line
-        plt.plot(lin, color=colors(i), label=str_lin)
+        if xy==False:
+            plt.plot(lin11, color='grey', linestyle=':', linewidth=0.7)
+        
+        if n>2:
+            #plot data points
+            plt.scatter(y=y[i], x=x[i], color=colors(i), marker='x')
+            #plot the regression line
+            plt.plot(lin, color=colors(i), label=str_lin)
+        else:
+            #plot data points
+            plt.scatter(y=y[i], x=x[i], color=colors[i], marker='x', s=50)
+            #plot the regression line
+            plt.plot(lin, color=colors[i], label=str_lin, linewidth=2.5)
         #
     
     fig[1].set_xlabel(namex)
@@ -158,7 +180,6 @@ def ch4_zoom(data_IRMS, MR_P, t1, t2):
   
 def keeling_plot(serie_x, serie_y, params, iso):
     
-    plt.rcParams.update({'font.size': 10})
     
     if iso=='D':
         color='xkcd:grey'
@@ -189,6 +210,7 @@ def keeling_plot(serie_x, serie_y, params, iso):
     
     slope=params[0]
     sig=params[1]
+    std_alpha=params[2]
     std_beta=params[3]
     r2=params[4][0]
     res_var=params[4][1]
@@ -200,7 +222,7 @@ def keeling_plot(serie_x, serie_y, params, iso):
     print('slope: '+str(slope)+'\nintercept: '+str(sig))
     
     # Prepare the figure layout
-    figure, (ax1, ax2)= plt.subplots(1,2, gridspec_kw = {'width_ratios':[1, 5]})
+    figure, (ax1, ax2)= plt.subplots(1,2, figsize=(10,10), gridspec_kw = {'width_ratios':[1, 5]})
     figure.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hspace=None)
 
     xmid=round((np.nanmax(MRx)+np.nanmin(MRx))/2,5)
@@ -220,7 +242,7 @@ def keeling_plot(serie_x, serie_y, params, iso):
     
     # Making the plot
     
-    y_lm='BCES, n='+str(len(delta))+', r2='+str(round(r2,3))+', rv='+str(round(res_var,3))+', sc='+str(round(np.sqrt(res_var/xrange),5))+'\n'+strd+'= '+str(round(sig,2))+pm+str(round(std_beta,2))+permil
+    y_lm='BCES, n='+str(len(delta))+', r2='+str(round(r2,3))+', rv='+str(round(res_var,3))+', sc='+str(round(np.sqrt(res_var/xrange),5))+'\nintercept= '+str(round(sig,2))+pm+str(round(std_beta,2))+permil+'\nslope= '+str(round(slope,2))+pm+str(round(std_alpha,2))+permil
     r_x, r_y = zip(*((j, j*slope + sig) for j in range(len(MRx))))
     lm = pd.DataFrame({strMRx : r_x, y_lm: r_y})
     lm.index=lm[strMRx]
@@ -255,8 +277,6 @@ def keeling_plot(serie_x, serie_y, params, iso):
 
 
 def hist(data13C, dataD, title, data13C_list=None, dataD_list=None, str_leg=None):
-    
-    plt.rcParams.update({'font.size': 22})
     
     fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10,20), sharex=False)
     ax1=axes[0]
@@ -294,9 +314,7 @@ def hist(data13C, dataD, title, data13C_list=None, dataD_list=None, str_leg=None
     return fig
 
   
-def overview_model(data_obs, data_mod, inventory, data2_mod=None):
-    
-    plt.rcParams.update({'font.size': 22})
+def overview_model(data_obs, data_mod, inventory, data2_mod=None, suf=''):
     
     if (inventory=='EDGAR') | (inventory=='both'):
         cM=web_red
@@ -307,6 +325,7 @@ def overview_model(data_obs, data_mod, inventory, data2_mod=None):
     elif inventory=='TNO':
         cM='g'
         str_inv=str_TNO
+        cP=web_blue
 
     figure, axes = plt.subplots(nrows=3, ncols=1, figsize=(20, 10), sharex=True)
     ax1=axes[0]
@@ -319,22 +338,22 @@ def overview_model(data_obs, data_mod, inventory, data2_mod=None):
     if inventory=='both':
         data2_mod.plot(y='Total', ax=ax1, color=cM2, lw=0.7, label=str_inv2)
     ax1.set_ylabel(strMR)
-    ax1.legend(fontsize=15)
+    ax1.legend(loc='upper right', fontsize=15)
 
     # Graph of the C isotopic signatures
     data_obs.plot(y=col_d13C, markersize=1, style='o', legend=False, ax=ax2, mec=cP, mfc=cP)
-    data_mod.plot(y=col_d13C_mod, ax=ax2, color=cM, lw=0.7, label=str_inv, legend=False)
+    data_mod.plot(y=col_d13C_mod+suf, ax=ax2, color=cM, lw=0.7, label=str_inv, legend=False)
     if inventory=='both':
-        data2_mod.plot(y=col_d13C_mod, ax=ax2, color=cM2, lw=0.7, label=str_inv2, legend=False)
+        data2_mod.plot(y=col_d13C_mod+suf, ax=ax2, color=cM2, lw=0.7, label=str_inv2, legend=False)
     ax2.set_ylabel(d13C+' [\u2030]')
     #ax2.legend(fontsize=15)
 
     # Graph of the H isotopic signatures
 
     data_obs.plot(y=col_dD, markersize=1, style='o', legend=False, ax=ax3,  mec=cP, mfc=cP)
-    data_mod.plot(y=col_dD_mod, ax=ax3, color=cM, lw=0.7, label=str_inv, legend=False)
+    data_mod.plot(y=col_dD_mod+suf, ax=ax3, color=cM, lw=0.7, label=str_inv, legend=False)
     if inventory=='both':
-        data2_mod.plot(y=col_dD_mod, ax=ax3, color=cM2, lw=0.7, label=str_inv2, legend=False)
+        data2_mod.plot(y=col_dD_mod+suf, ax=ax3, color=cM2, lw=0.7, label=str_inv2, legend=False)
     ax3.set_ylabel(dD+' [\u2030]')
     #ax3.legend(fontsize=15)
     
@@ -348,29 +367,31 @@ def overview_model(data_obs, data_mod, inventory, data2_mod=None):
     ax2.grid(which= 'major', axis='both', linestyle='-')
     ax3.grid(which= 'major', axis='both', linestyle='-')
     
-    plt.suptitle('Overview of the observations with modeled time series using '+str_inv)
+    #plt.suptitle('Overview of the observations with modeled time series using '+str_inv)
 
     return figure, axes
 
 
 def wind_rose(direction, var, name, title):
     
-    #plt.rcParams.update({'font.size': 14})
-    colors=[web_blue, web_green, vertclair, web_yellow, web_red]
+    #plt.rcParams.update({'legend.fancybox' = False})
+    colors=['k', web_blue, web_cyan, vertclair, web_yellow, web_red]
+    #colors=[vertclair, web_cyan, web_blue, web_magenta, web_red]
     cm = mcolors.LinearSegmentedColormap.from_list('web', colors, N=6)
-    #bins=[min(var), 2050, 2200, 2350, 2900]
-    bins=5
+    bins=[min(var), 2050, 2200, 2350, 2900]
+    #bins=5
     
     fig = plt.figure(figsize=(10,10))
     ax1 = WindroseAxes.from_ax(fig=fig)
     
     ax1.bar(direction, var, nsector=32, opening=0.8, cmap=cm, bins=bins, edgecolor='white')
     
-    ax1.legend(title=name, loc=4, bbox_to_anchor=(1.2, -0.15), fontsize='medium')
-    ax1.set_title(title, pad=10)
-    #ax1.set_rlim([0, 1000])
-    #ax1.yaxis.set_ticks([0, 200, 400, 600, 800, 1000])
-    #ax1.yaxis.set_ticklabels([0, 200, 400, 600, 800, 1000])
+    ax1.legend(title=name, loc='lower right',
+               fancybox=False, framealpha=1, edgecolor='k')#, bbox_to_anchor=(1.2, -0.15), fontsize='medium')
+    #ax1.set_title(title, pad=10)
+    ax1.set_rlim([0, 1000])
+    ax1.yaxis.set_ticks([0, 200, 400, 600, 800, 1000])
+    ax1.yaxis.set_ticklabels([0, 200, 400, 600, 800, 1000])
     #ax1.set_rlabel_position([0, 200, 400, 600, 800, 1000])
     
     return fig
@@ -378,38 +399,58 @@ def wind_rose(direction, var, name, title):
 
 def overview_pk(data_obs, data_obs_pk, data_model_pk, data_model=None, names=None):
     
-    colors_obs=['red', 'green', 'orange', 'black']
-    colors_model=['blue', 'orange', 'green']
+    colors_obs=['k', 'green', 'orange', 'black']
+    colors_model=[web_red, 'green', 'blue']
+    cm_blue=np.array(cmocean.cm.balance(0.15))
+    cm_cyan=np.array(cmocean.cm.balance(0.45))
+    cm_red=np.array(cmocean.cm.balance(0.85))
+    norm=plt.Normalize(0, 360)
     
-    plt.rcParams.update({'font.size': 22})
-    figure, axes = plt.subplots(nrows=3, ncols=1, figsize=(20, 10), sharex=True)
+    plt.rcParams.update({'font.size': 15})
+    figure, axes = plt.subplots(nrows=4, ncols=1, figsize=(12, 10), sharex=True, gridspec_kw = {'height_ratios':[2,1,1,1], 'hspace':0})
     ax1=axes[0]
+    #ax1b=ax1.twinx()
     ax2=axes[1]
     ax3=axes[2]
+    ax4=axes[3]
+    
+    # Graph of the wind (top or bottom)
+    wind_bar=np.array([max(data_obs[col_MR])]*len(data_obs))
+    wind_color=cmocean.cm.balance(norm(data_obs[col_wd].values))
+    #ax1b.scatter(x=data_obs.index, y=data_obs[col_wd], s=data_obs[col_ws]**2*30, marker='^', edgecolors='gray', facecolors='none')
+    #ax1b.vlines(x=data_obs.index, ymin=data_obs[col_wd]-data_obs[col_ws]**2*10, ymax=data_obs[col_wd]+data_obs[col_ws]**2*10, colors='k', alpha=0.3)
+    ax4.bar(x=data_obs.index, height=data_obs[col_ws], color=wind_color, width=0.025)
     
     # Graph of the mixing ratios (top)
-    data_obs.plot(y=col_MR, ax=ax1, markersize=2, style='o',  mec='k', mfc='k', label='observations')    
-    ax1.set_ylabel(strMR)
-    ax1.yaxis.set_major_locator(plt.MaxNLocator(5))
-    ax1.legend(fontsize=15)
-    # Graph of the C isotopic signatures
-    data_obs.plot(y=col_d13C, markersize=2, style='o', legend=False, ax=ax2, mec='k', mfc='k')
-    # Graph of the H isotopic signatures
-    data_obs.plot(y=col_dD, markersize=2, style='o', legend=False, ax=ax3,  mec='k', mfc='k')
+    data_obs.plot(y=col_MR, ax=ax1, markersize=4, style='-',  mec='k', mfc='white', label='observations', color='k')    
     
+    ax1.set_ylabel(strMR)
+    #ax1b.set_ylabel('Wind dir. [º]')
+    ax1.yaxis.set_major_locator(plt.MaxNLocator(5))
+    
+    # Graph of the C isotopic signatures
+    #data_obs.plot(y=col_d13C, markersize=2, style='o', legend=False, ax=ax2, mec='k', mfc='k')
+    # Graph of the H isotopic signatures
+    #data_obs.plot(y=col_dD, markersize=2, style='o', legend=False, ax=ax3,  mec='k', mfc='k')
+    
+    # Peak signatures
+    mint=data_obs.iloc[0].name
+    maxt=data_obs.iloc[-1].name
     obs_patches=[]
     i=0
     for df in data_obs_pk:
     
-        start_d13C=df['start_'+col_dt_d13C].dropna()
-        start_dD=df['start_'+col_dt_dD].dropna()
-        end_d13C=df['end_'+col_dt_d13C].dropna()
-        end_dD=df['end_'+col_dt_dD].dropna()
+        #sub_df=df.loc[((df[col_dt_dD]>mint)&(df[col_dt_dD]<maxt))|((df[col_dt_d13C]>mint)&(df[col_dt_d13C]<maxt))]
+        sub_df=df
+        start_d13C=sub_df['start_'+col_dt_d13C].dropna()
+        start_dD=sub_df['start_'+col_dt_dD].dropna()
+        end_d13C=sub_df['end_'+col_dt_d13C].dropna()
+        end_dD=sub_df['end_'+col_dt_dD].dropna()
     
-        top_d13C=df[col_d13C].dropna()+df[col_errd13C].dropna()
-        top_dD=df[col_dD].dropna()+df[col_errdD].dropna()
-        bot_d13C=df[col_d13C].dropna()-df[col_errd13C].dropna()
-        bot_dD=df[col_dD].dropna()-df[col_errdD].dropna()
+        top_d13C=sub_df[col_d13C].dropna()+sub_df[col_errd13C].dropna()
+        top_dD=sub_df[col_dD].dropna()+sub_df[col_errdD].dropna()
+        bot_d13C=sub_df[col_d13C].dropna()-sub_df[col_errd13C].dropna()
+        bot_dD=sub_df[col_dD].dropna()-sub_df[col_errdD].dropna()
     
         # Plot the C peak signatures
         ax2.fill([start_d13C, end_d13C, end_d13C, start_d13C], 
@@ -426,23 +467,44 @@ def overview_pk(data_obs, data_obs_pk, data_model_pk, data_model=None, names=Non
         
         i=i+1
     
+    # Model time series 
     j=0
     if data_model is not None:
+        sources=['Wetland', 'Agriculture', 'Waste', 'FF', 'FF_coal', 'FF_gas', 'FF_oil', 'ENB', 'Other']
+        sources_c=[web_green, web_green, vertclair, cm_red, cm_red, cm_red, cm_red, cm_blue, cm_blue]
+        s_labels=[]
         for df in data_model:
             df.plot(y='Total', ax=ax1, markersize=1, style='-',  color=colors_model[j], legend=False)
+            ch4_added=df['BC']
+            ns=0
+            for s in sources:
+                if s in list(df):
+                    if (s=='FF_gas') or (s=='Other'):
+                        ax1.bar(x=ch4_added.index, height=df[s], bottom=ch4_added, width=0.045, color=sources_c[ns], alpha=0.7, label=s)#, hatch='//')
+                        s_labels.append(mpatches.Patch(color=sources_c[ns], alpha=0.7, label=s))
+                    else:
+                        ax1.bar(x=ch4_added.index, height=df[s], bottom=ch4_added, width=0.045, color=sources_c[ns], alpha=1, label=s)
+                        if (s=='Agriculture') or (s=='Waste') or (s=='FF_coal') or (s=='ENB'):
+                            s_labels.append(mpatches.Patch(color=sources_c[ns], label=s))
+                    ch4_added=ch4_added+df[s]
+                ns=ns+1  
+            #ax1.legend(loc='upper right')
             j=j+1
             
+    # Model peaks
     model_patches=[]
     j=0
     for df in data_model_pk:
+        
+        sub_df=df.loc[(df[col_dt]>mint)&(df[col_dt]<maxt)]
+        
+        start=sub_df['start_'+col_dt].dropna()
+        end=sub_df['end_'+col_dt].dropna()
     
-        start=df['start_'+col_dt].dropna()
-        end=df['end_'+col_dt].dropna()
-    
-        top_d13C=df[col_d13C].dropna()+df[col_errd13C].dropna()
-        top_dD=df[col_dD].dropna()+df[col_errdD].dropna()
-        bot_d13C=df[col_d13C].dropna()-df[col_errd13C].dropna()
-        bot_dD=df[col_dD].dropna()-df[col_errdD].dropna()
+        top_d13C=sub_df[col_d13C].dropna()+sub_df[col_errd13C].dropna()
+        top_dD=sub_df[col_dD].dropna()+sub_df[col_errdD].dropna()
+        bot_d13C=sub_df[col_d13C].dropna()-sub_df[col_errd13C].dropna()
+        bot_dD=sub_df[col_dD].dropna()-sub_df[col_errdD].dropna()
     
         # Plot the C peak signatures
         ax2.fill([start, end, end, start], 
@@ -459,26 +521,48 @@ def overview_pk(data_obs, data_obs_pk, data_model_pk, data_model=None, names=Non
         
         j=j+1
     
+    if names is not None:
+        ax1.legend(names, fontsize=10, loc='upper right')
+    
+    # d13C plot
     ax2.set_ylabel(d13C+' [\u2030]')
     ax2.yaxis.set_major_locator(plt.MaxNLocator(5))
-    ax2.legend(handles=obs_patches+model_patches, fontsize=15, loc='upper right')
+    ax2.set_xlim(mint, maxt)
+    ax2.axhline(y=-47.8, lw=1, color='k', ls='--')# horizontal line for background signature
     
+    # dD plot
     ax3.set_ylabel(dD+' [\u2030]')
     ax3.yaxis.set_major_locator(plt.MaxNLocator(5))
-    #ax3.legend(fontsize=15)
-        
-    ax3.xaxis_date()
-    ax3.format_xdata = mdates.DateFormatter('%Y-%b')
-    ax3.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%b-%d'))
-    ax3.xaxis.set_major_locator(plt.MaxNLocator(10))
+    ax3.set_ylim([-300, -120])
+    ax3.set_xlim(mint, maxt)    
+    
+    ax4.set_ylabel('Wind speed [m/s]')
+    
+    ax4.xaxis_date()
+    ax4.format_xdata = mdates.DateFormatter('%Y-%b')
+    #ax4.xaxis.set_major_formatter(mdates.DateFormatter('%b-%d'))
+    ax4.xaxis.set_major_formatter(mdates.DateFormatter('%b-%d'))
+    ax4.xaxis.set_major_locator(plt.MaxNLocator(10))
     figure.autofmt_xdate()
     
-    ax1.grid(which= 'major', axis='both', linestyle='-')
-    ax2.grid(which= 'major', axis='both', linestyle='-')
-    ax3.grid(which= 'major', axis='both', linestyle='-')
+    # Legend sources and obs/model
+    ax3.legend(handles=obs_patches+model_patches, fontsize=12, loc='lower left', bbox_to_anchor=(0.87, 0.6))
+    ax1.legend(handles=s_labels, fontsize=12, loc='lower left', bbox_to_anchor=(0.85, 0.5))
     
-    plt.suptitle('Overview of the observations with peak signatures.')
-
+    # Wind colorbar
+    #cax4 = figure.add_axes([0.74, 0.31, 0.15, 0.015])
+    #sm = ScalarMappable(cmap=cmocean.cm.balance, norm=norm)
+    #sm.set_array([])
+    #cbar = plt.colorbar(sm, cax=cax4, orientation='horizontal', ticks=[0, 180, 360])
+    #cbar.set_label('Wind dir. [º]', rotation=0,labelpad=0)
+    
+    ax1.grid(which= 'major', axis='both', linestyle='-', linewidth=0.4)
+    ax2.grid(which= 'major', axis='both', linestyle='-', linewidth=0.4)
+    ax3.grid(which= 'major', axis='both', linestyle='-', linewidth=0.4)
+    ax4.grid(which= 'major', axis='both', linestyle='-', linewidth=0.4)
+    
+    #plt.suptitle('Overview of the observations with peak signatures.')
+    
     return figure, axes
 
 
@@ -503,12 +587,14 @@ def overview_ch4(data_obs, data_mod, inventory, data2_mod=None):
     return figure
 
 
-def overview(data_obs, data_P=None):
+def overview(data_obs, data_P=None, data_CHIM=None, data_MH=None):
     
     plt.rcParams.update({'font.size': 22})
     
     c13C='#333399'
     cD='#333399'
+    colors=['red', 'green', 'green', 'black', 'black']
+    c_MH=web_cyan
     
     figure, axes = plt.subplots(nrows=3, ncols=1, figsize=(15,10), sharex=True)
     ax1=axes[0]
@@ -516,14 +602,25 @@ def overview(data_obs, data_P=None):
     ax3=axes[2]
     
     if data_P is not None:
-        data_P.plot(y=col_P, ax=ax1, color=cP, lw=0.7)
+        data_P.plot(y=col_P, ax=ax1, color=cP, lw=0.7, label='CRDS')
         
-    data_obs.plot(y=col_MR_d13C, ax=ax1, markersize=1.5, style='.',  mec=c13C, mfc=c13C, legend=False)
+    data_obs.plot(y=col_MR_d13C, ax=ax1, markersize=1.5, style='.',  mec=c13C, mfc=c13C, label='IRMS')
     data_obs.plot(y=col_d13C, markersize=1.5, style='.', legend=False, ax=ax2, mec=c13C, mfc=c13C)
     
     data_obs.plot(y=col_MR_dD, ax=ax1, markersize=1.5, style='.',  mec=cD, mfc=cD, legend=False)
     data_obs.plot(y=col_dD, markersize=1.5, style='.', legend=False, ax=ax3, mec=cD, mfc=cD)
     
+    if data_CHIM is not None:
+        i=0
+        for df in data_CHIM:
+            df.plot(y='Total', ax=ax1, color=colors[i], lw=0.7, legend=False)
+            df.plot(y='d13C calc5', ax=ax2, color=colors[i], lw=0.7, legend=False)
+            df.plot(y='dD calc5', ax=ax3, color=colors[i], lw=0.7, legend=False)
+            i=i+1
+            
+    if data_MH is not None:
+        data_MH.plot(y='CH4', ax=ax1, color=c_MH, lw=0.7, label='Mace Head')
+        
     ax1.set_ylabel('x(CH4) [ppb]')
     #ax1.legend(['[CH4] IRMS '+d13C, '[CH4] IRMS '+dD], markerscale=5, loc=1, fontsize='x-small')
     
@@ -582,7 +679,7 @@ def wind_contour(direction, var, name, fill, title, fig=None):
     return fig
 
 
-def top_diagrams(list_df, list_labels, ambient=None, patches=True, title=None):
+def top_diagrams(list_df, list_labels, sufs, ambient=None, patches=True, title=None):
         
     # Axis limits
     lim_dD=[-420, -50]
@@ -616,7 +713,7 @@ def top_diagrams(list_df, list_labels, ambient=None, patches=True, title=None):
     c=['black', web_red, web_blue, web_green]
     
     # Make the figure
-    top_fig_top= plt.figure(figsize=(15,10))
+    top_fig_top= plt.figure(figsize=(15,15))
     top_top=top_fig_top.add_subplot(111)
 
     # Add the areas
@@ -643,7 +740,7 @@ def top_diagrams(list_df, list_labels, ambient=None, patches=True, title=None):
     i=0
     # Add the peak signatures if necessary
     for df in list_df:
-        df.plot(kind='scatter', ax=top_top, x=col_d13C, y=col_dD, xerr=col_errd13C, yerr=col_errdD, marker='o', color=c[i], zorder=1)
+        df.plot(kind='scatter', ax=top_top, x=col_d13C+sufs[i], y=col_dD+sufs[i], xerr=col_errd13C+sufs[i], yerr=col_errdD+sufs[i], marker='o', color=c[i], zorder=1)
         data_patches.append(mlines.Line2D([], [], color=c[i], marker='o',
                            label=list_labels[i], linestyle=''))
         i=i+1

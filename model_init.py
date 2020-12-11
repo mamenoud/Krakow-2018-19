@@ -87,29 +87,41 @@ vertclair='xkcd:light green'
 
 f_path = '/Users/malika/surfdrive/Data/Krakow/Roof air/figures/'
 t_path = '/Users/malika/surfdrive/Data/Krakow/Roof air/tables/'
-today='2020-09-14 model_init/'
+today='2020-11-19 model_init/'
 
 #%%
 ###############################################################################
 # DATA TABLES
 ###############################################################################
 
-edgar_ch4=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Modeled/Krakow_201809_201903/Krakow_CH4_EDGARv50_sectors_and_total_201809_201903.csv', sep=';', index_col=0, parse_dates=True, keep_date_col=True)
-tno_ch4=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Modeled/Krakow_201809_201903/Krakow_CH4_TNO_CAMS_REGv221_sectors_and_total_201809_201903.csv', sep=';', index_col=0, parse_dates=True, keep_date_col=True)
+edgar_ch4=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Modeled/Krakow_Updated categories/Krakow_CH4_EDGARv50_sectors_and_total_201809_201903.csv', sep=',', index_col=0, parse_dates=True, keep_date_col=True, dayfirst=True)
+tno_ch4=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Modeled/Krakow_Updated categories/Krakow_CH4_TNO_CAMS_REGv42_sectors_and_total_201809_201903.csv', sep=',', index_col=0, parse_dates=True, keep_date_col=True, dayfirst=True)
 # Get the list of sources before you add new columns to that table
-sources=edgar_ch4.sum().index.to_list()
+tno_sources=tno_ch4.sum().index.to_list()
+edgar_sources=edgar_ch4.sum().index.to_list()
 
-df_d13C=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Modeled/Krakow_201809_201903/krk_d13_EDGAR_TNO_201809_201903.csv', sep=';', index_col=0, parse_dates=True, keep_date_col=True)
-df_dD=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Modeled/Krakow_201809_201903/krk_dD_EDGAR_TNO_201809_201903.csv', sep=';', index_col=0, parse_dates=True, keep_date_col=True)
+#df_d13C=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Modeled/Krakow_201809_201903/krk_d13_EDGAR_TNO_201809_201903.csv', sep=';', index_col=0, parse_dates=True, keep_date_col=True)
+#df_dD=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Modeled/Krakow_201809_201903/krk_dD_EDGAR_TNO_201809_201903.csv', sep=';', index_col=0, parse_dates=True, keep_date_col=True)
 
 # IRMS data
 df_IRMS=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Input files/KRK_merged_re-calibrated_corrected-IRMS.csv', sep=',', index_col=col_dt, parse_dates=True, dayfirst=True, keep_date_col=True)
 
 #%%
-# Make one df for each inventory
-df_edgar=edgar_ch4.join(pd.concat([df_d13C['EDGARv50'].rename('d13C'), df_dD['EDGARv50'].rename('dD')], axis=1))
+# Model isotopic signatures calculations
+[d13C_agr, d13C_wst, d13C_ff, d13C_ffc, d13C_ffg, d13C_ffo, d13C_enb, d13C_oth, d13C_wet, d13C_bg] = [-63, -51.6, -49.1, -50.6, -47.6, -49.1, -49.1, -32.1, -73.2, -47.8]
+[dD_agr, dD_wst, dD_ff, dD_ffc, dD_ffg, dD_ffo, dD_enb, dD_oth, dD_wet, dD_bg] = [-359, -299, -189, -192, -194, -189, -189, -185, -323, -90]
 
-df_tno=tno_ch4.join(pd.concat([df_d13C['TNO_CAMS_REGv221'].rename('d13C'), df_dD['TNO_CAMS_REGv221'].rename('dD')], axis=1))
+d13C_edgar=(d13C_agr*edgar_ch4['Agriculture']+d13C_wst*edgar_ch4['Waste']+d13C_ffc*edgar_ch4['FF_coal']+d13C_ffg*edgar_ch4['FF_gas']+d13C_ffo*edgar_ch4['FF_oil']+d13C_enb*edgar_ch4['ENB']+d13C_oth*edgar_ch4['Other']+d13C_wet*edgar_ch4['Wetland']+d13C_bg*edgar_ch4['BC'])/edgar_ch4['Total']
+d13C_tno=(d13C_agr*tno_ch4['Agriculture']+d13C_wst*tno_ch4['Waste']+d13C_ff*tno_ch4['FF']+d13C_enb*tno_ch4['ENB']+d13C_oth*tno_ch4['Other']+d13C_wet*tno_ch4['Wetland']+d13C_bg*tno_ch4['BC'])/tno_ch4['Total']
+
+dD_edgar=(dD_agr*edgar_ch4['Agriculture']+dD_wst*edgar_ch4['Waste']+dD_ffc*edgar_ch4['FF_coal']+dD_ffg*edgar_ch4['FF_gas']+dD_ffo*edgar_ch4['FF_oil']+dD_enb*edgar_ch4['ENB']+dD_oth*edgar_ch4['Other']+dD_wet*edgar_ch4['Wetland']+dD_bg*edgar_ch4['BC'])/edgar_ch4['Total']
+dD_tno=(dD_agr*tno_ch4['Agriculture']+dD_wst*tno_ch4['Waste']+dD_ff*tno_ch4['FF']+dD_enb*tno_ch4['ENB']+dD_oth*tno_ch4['Other']+dD_wet*tno_ch4['Wetland']+dD_bg*tno_ch4['BC'])/tno_ch4['Total']
+
+#%%
+# Make one df for each inventory
+df_edgar=edgar_ch4.join(pd.concat([d13C_edgar.rename('d13C calc5'), dD_edgar.rename('dD calc5')], axis=1))
+
+df_tno=tno_ch4.join(pd.concat([d13C_tno.rename('d13C calc5'), dD_tno.rename('dD calc5')], axis=1))
 
 #%%
 # Start from previous calc configuration
@@ -123,7 +135,10 @@ df_tno=pd.read_table(t_path+'/model/Krakow_CH4_TNO_CAMS_REGv221_processed.csv',s
 
 def eval_model(df_model, inventory, conf):
     
-    df_model_bis=df_model[['Agriculture', 'Waste', 'FF', 'Other', 'Wetland', 'BC', 'Total', 'd13C '+conf, 'dD '+conf]]
+    if inventory=='EDGAR':
+        df_model_bis=df_model[['Agriculture', 'Waste', 'FF_coal', 'FF_gas', 'FF_oil', 'ENB', 'Other', 'Wetland', 'BC', 'Total', 'd13C '+conf, 'dD '+conf]]
+    elif inventory=='TNO':
+        df_model_bis=df_model[['Agriculture', 'Waste', 'FF', 'ENB', 'Other', 'Wetland', 'BC', 'Total', 'd13C '+conf, 'dD '+conf]]
     df_model_bis.rename(columns={'d13C '+conf:'d13C', 'dD '+conf:'dD'}, inplace=True)
     
     fig_overview, ax_overview = fg.overview_model(df_IRMS, df_model_bis, inventory)
@@ -146,21 +161,22 @@ def eval_model(df_model, inventory, conf):
     
     return
     
-eval_model(df_edgar, 'EDGAR', 'calc3')
+eval_model(df_edgar, 'EDGAR', 'calc5')
+eval_model(df_tno, 'TNO', 'calc5')
 #%%
 # Plot model data with original datetimes
 fig_overview_edgar, ax_overview_edgar = fg.overview_model(df_IRMS, df_edgar, 'EDGAR')
 fig_overview_tno, ax_overview_tno = fg.overview_model(df_IRMS, df_tno, 'TNO')
-fig_overview_chimere, ax_overview_chimere = fg.overview_model(df_IRMS, df_edgar, 'both', df_tno)
+fig_overview_chimere, ax_overview_chimere = fg.overview_model(df_IRMS, df_edgar, 'both', df_tno, suf=' calc5')
 
 fig_overview_edgar.savefig(f_path+today+'overview_edgar.png', dpi=300)
 fig_overview_tno.savefig(f_path+today+'overview_tno.png', dpi=300)
-fig_overview_chimere.savefig(f_path+today+'overview_chimere.png', dpi=300)
+fig_overview_chimere.savefig(f_path+today+'overview_chimere.png', dpi=300, transparent=True)
 
 #%%
 # Interpolate the model datetimes to the measurement ones for histograms and correlation plots
-df_all=df_IRMS.join(pd.concat([pd.DataFrame({'ch4_EDGAR':np.interp(df_IRMS.index, df_edgar.index, df_edgar['Total']), 'd13C_EDGAR': np.interp(df_IRMS.index, df_edgar.index, df_edgar['d13C']), 'dD_EDGAR':np.interp(df_IRMS.index, df_edgar.index, df_edgar['dD'])}, index=df_IRMS.index),
-                               pd.DataFrame({'ch4_TNO':np.interp(df_IRMS.index, df_tno.index, df_tno['Total']), 'd13C_TNO': np.interp(df_IRMS.index, df_tno.index, df_tno['d13C']), 'dD_TNO':np.interp(df_IRMS.index, df_tno.index, df_tno['dD'])}, index=df_IRMS.index)], axis=1),
+df_all=df_IRMS.join(pd.concat([pd.DataFrame({'ch4_EDGAR':np.interp(df_IRMS.index, df_edgar.index, df_edgar['Total']), 'd13C_EDGAR': np.interp(df_IRMS.index, df_edgar.index, df_edgar['d13C calc5']), 'dD_EDGAR':np.interp(df_IRMS.index, df_edgar.index, df_edgar['dD calc5'])}, index=df_IRMS.index),
+                               pd.DataFrame({'ch4_TNO':np.interp(df_IRMS.index, df_tno.index, df_tno['Total']), 'd13C_TNO': np.interp(df_IRMS.index, df_tno.index, df_tno['d13C calc5']), 'dD_TNO':np.interp(df_IRMS.index, df_tno.index, df_tno['dD calc5'])}, index=df_IRMS.index)], axis=1),
                     )
 
 df_all_ch4=pd.DataFrame({col_MR:pd.concat([df_IRMS[col_MR_d13C], df_IRMS[col_MR_dD]]).dropna(), 'ch4_EDGAR':df_all['ch4_EDGAR'], 'ch4_TNO':df_all['ch4_TNO']})
@@ -179,24 +195,15 @@ fig_corr_dD[0].savefig(f_path+today+'model-correlation_dD.png', dpi=300)
 #%%
 # Contributions of each source
 
-for s in sources:
-    if s=='BC' or s=='Total':
-        continue
-    else:
-        df_edgar[s+' added'] = edgar_ch4[s]/(edgar_ch4['Total']-edgar_ch4['BC'])
-        df_tno[s+' added'] = tno_ch4[s]/(tno_ch4['Total']-tno_ch4['BC'])
+sources_edgar=['Wetland', 'Agriculture', 'Waste', 'FF_coal', 'FF_gas', 'FF_oil', 'ENB', 'Other']
+sources_tno=['Wetland', 'Agriculture', 'Waste', 'FF', 'ENB', 'Other']
+for s in sources_edgar:
+    # proportion of each source
+    df_edgar[s+' added'] = edgar_ch4[s]/(edgar_ch4['Total']-edgar_ch4['BC'])
+for s in sources_tno:    
+    df_tno[s+' added'] = tno_ch4[s]/(tno_ch4['Total']-tno_ch4['BC'])
 
 #%%
-# Model isotopic signatures calculations
-[d13C_agr, d13C_wst, d13C_ff, d13C_oth, d13C_wet, d13C_bg] = [-63.9, -56, -46.7, -26.2, -61.5, -47.8]
-[dD_agr, dD_wst, dD_ff, dD_oth, dD_wet, dD_bg] = [-319, -298, -185, -211, -322, -90]
-
-df_edgar['d13C calc4']=(d13C_agr*df_edgar['Agriculture']+d13C_wst*df_edgar['Waste']+d13C_ff*df_edgar['FF']+d13C_oth*df_edgar['Other']+d13C_wet*df_edgar['Wetland']+d13C_bg*df_edgar['BC'])/df_edgar['Total']
-df_tno['d13C calc4']=(d13C_agr*df_tno['Agriculture']+d13C_wst*df_tno['Waste']+d13C_ff*df_tno['FF']+d13C_oth*df_tno['Other']+d13C_wet*df_tno['Wetland']+d13C_bg*df_tno['BC'])/df_tno['Total']
-
-df_edgar['dD calc4']=(dD_agr*df_edgar['Agriculture']+dD_wst*df_edgar['Waste']+dD_ff*df_edgar['FF']+dD_oth*df_edgar['Other']+dD_wet*df_edgar['Wetland']+dD_bg*df_edgar['BC'])/df_edgar['Total']
-df_tno['dD calc4']=(dD_agr*df_tno['Agriculture']+dD_wst*df_tno['Waste']+dD_ff*df_tno['FF']+dD_oth*df_tno['Other']+dD_wet*df_tno['Wetland']+dD_bg*df_tno['BC'])/df_tno['Total']
-
 # Save the merged model tables
 df_edgar.to_csv(t_path+'model/Krakow_CH4_EDGARv50_processed.csv')
 df_tno.to_csv(t_path+'model/Krakow_CH4_TNO_CAMS_REGv221_processed.csv')
