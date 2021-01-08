@@ -65,9 +65,6 @@ col_d13C_P='del13CH4_CORR'
 col_MR='IRMS_'+col_P
 col_errMR='IRMS_err'+col_P
 
-col_MR_edgar='EDGARv4.3.2_CH4 [ppb]'
-col_MR_tno='TNO-MACC_III_CH4 [ppb]'
-
 col_wd='averageWindDirection'
 col_wd_d13C='averageWindDirection_d13C'
 col_wd_dD='averageWindDirection_dD'
@@ -85,8 +82,8 @@ strMR_D='MR_ppb - '+dD
 str_d13C=delta13C+permil
 str_dD=deltaD+permil
 str_MR='χ(CH\u2084) [ppb]'
-str_EDGAR='EDGARv50'
-str_TNO='TNO_CAMS_REGv221'
+str_EDGAR='EDGAR_v5.0'
+str_TNO='CAMS-REG_v4.2'
 
 vertclair='#009966'
 web_blue='#333399'
@@ -118,9 +115,6 @@ df_IRMS=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Input files/
 # Modeled data
 df_edgar=pd.read_table(t_path+'model/Krakow_CH4_EDGARv50_processed.csv', sep=',', index_col=0, parse_dates=True, dayfirst=True, keep_date_col=True)
 df_tno=pd.read_table(t_path+'model/Krakow_CH4_TNO_CAMS_REGv221_processed.csv', sep=',', index_col=0, parse_dates=True, dayfirst=True, keep_date_col=True)
-df_Wmod=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Modeled/wind_speed_direction_KRK_20180914_20190314_CHIMERE.csv', sep=';', index_col=0, parse_dates=True)
-#df_edgar=df_edgar_in.join(df_Wmod)
-#df_tno=df_tno_in.join(df_Wmod)
 
 # Sample data
 df_samples=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Krakow_city/Krakow_all-samples_signatures.csv', sep=',')
@@ -135,10 +129,15 @@ df_mh.where(df_mh['flag']==' ', inplace=True)
 #%%
 # Overview graph
 f_IRMS = fg.overview(df_IRMS, data_MH=df_mh)
-f_IRMS.savefig(f_path+'IRMS_overview_mace-head.png', transparent=True)
+f_IRMS.savefig(f_path+today+'IRMS_overview_mace-head.png', dpi=600, transparent=True, bbox_inches = 'tight', pad_inches = 0)
 
-f_edgar = fg.overview(df_IRMS, data_CHIM=[df_edgar], data_MH=df_mh)
-#f_edgar.savefig(f_path+'overview_IRMS&EDGAR-calc3.png', dpi=300)
+f_chimere = fg.overview(df_IRMS, data_CHIM=[df_edgar, df_tno])
+f_chimere.savefig(f_path+today+'overview_chimere.png', dpi=600, transparent=True, bbox_inches = 'tight', pad_inches = 0)
+
+# Cut the 2 parts of the data
+t0='2018-09-14 00:00:00'
+t1='2018-11-15 00:00:00'
+t2='2019-03-15 00:00:00'
 
 #%%
 # meteo analysis
@@ -261,11 +260,11 @@ df_pk2D[col_errwd]=np.std([df_pk2D[col_wd_dD], df_pk2D[col_wd_d13C]], axis=0)
 df_pk2D[col_ws]=np.mean([df_pk2D[col_ws_dD], df_pk2D[col_ws_d13C]], axis=0)
 df_pk2D[col_errws]=np.std([df_pk2D[col_ws_dD], df_pk2D[col_ws_d13C]], axis=0)
 
-fig = plt.figure(figsize=(15,15))
+fig = plt.figure(figsize=(10,10))
 ax = fig.add_subplot(111)
 norm=plt.Normalize(0, 360)
 wind_color=cmocean.cm.balance(norm(df_pk2D[col_wd].values))
-ax.scatter(df_pk2D[col_d13C], df_pk2D[col_dD], marker='o', s=(df_pk2D[col_ws]*10)**2, color=wind_color)
+scatter=ax.scatter(df_pk2D[col_d13C], df_pk2D[col_dD], marker='o', s=(df_pk2D[col_ws]*10)**2, color=wind_color)
 ax.grid(axis='x')
 ax.grid(axis='y')
 ax.set_ylabel(str_dD)
@@ -275,12 +274,15 @@ sm = ScalarMappable(cmap=cmocean.cm.balance, norm=norm)
 sm.set_array([])
 cbar = plt.colorbar(sm, cax=cax, orientation='vertical', ticks=[0, 180, 360])
 cbar.set_label('Wind dir. [º]', rotation=90,labelpad=5)
+# legend of sizes
+handles, labels = scatter.legend_elements(prop="sizes", alpha=0.6, func=lambda s: np.sqrt(s)/10, num=5)
+legend2 = ax.legend(handles, labels, loc="lower right", title="Wind speed\n[m/s]")
 
-fig.savefig(f_path+today+'2D_PKE-per-wind_original.png', dpi=300, transparent=True)
+fig.savefig(f_path+today+'2D_PKE-per-wind_original.png', dpi=300, transparent=True, bbox_inches = 'tight', pad_inches = 0)
 
 #%% Top diagram with error bars
 
-fig = plt.figure(figsize=(15,15))
+fig = plt.figure(figsize=(10,10))
 ax = fig.add_subplot(111)
 norm=plt.Normalize(0, 360)
 wind_color=cmocean.cm.balance(norm(df_pk2D[col_wd].values))
@@ -290,7 +292,7 @@ ax.grid(axis='y')
 ax.set_ylabel(str_dD)
 ax.set_xlabel(str_d13C)
 
-fig.savefig(f_path+today+'2D_PKE-errors_original.png', dpi=300, transparent=True)
+fig.savefig(f_path+today+'2D_PKE-errors_original.png', dpi=300, transparent=True, bbox_inches = 'tight', pad_inches = 0)
 
 #%%
 # High d13C analysis
@@ -418,12 +420,12 @@ windrose_pkdD.savefig(f_path+today+'windrose_dD-peaks_original.png', dpi=300)
 fig_hist_W= plt.figure(figsize=(15,10))
 ax_hist_W=fig_hist_W.add_subplot(111)
 sns.kdeplot(df_IRMS[col_wd], shade=True, ax=ax_hist_W, label='IRMS')
-sns.kdeplot(df_edgar[col_wd], shade=True, ax=ax_hist_W, label='CHIMERE')
+#sns.kdeplot(df_edgar[col_wd], shade=True, ax=ax_hist_W, label='CHIMERE')
 #sns.kdeplot(df_IRMS[col_ws], shade=True, ax=ax_hist_W, label='IRMS')
 #sns.kdeplot(df_edgar[col_ws], shade=True, ax=ax_hist_W, label='CHIMERE')
 ax_hist_W.set_xlabel('Wind dir. [º]')
 #ax_hist_W.set_xlabel('Wind speed. [m/s]')
-fig_hist_W.savefig(f_path+'windhist-dir_IRMS&CHIMERE.png', dpi=300)
+#fig_hist_W.savefig(f_path+'windhist-dir_IRMS&CHIMERE.png', dpi=300)
 
 
 #%%
@@ -442,8 +444,8 @@ for m in range(len(str_months)):
     #plt.hist(monthly_IRMS[m][col_wd])
     #monthly_IRMS[m].mean()[[col_wd, col_ws]]
     #monthly_IRMS[m].std()[[col_wd, col_ws]]
-    #sns.kdeplot(monthly_IRMS[m][col_wd], shade=False, ax=ax, label=str_months[m], color=c[m], bw=10)
-    #sns.kdeplot(monthly_IRMS[m][col_ws], shade=False, ax=ax, label='month #: '+str(m), color=c[m])
+    #sns.kdeplot(monthly_IRMS[m][col_wd], shade=False, ax=ax, label=str_months[m], color=c[m])#, bw=10)
+    sns.kdeplot(monthly_IRMS[m][col_ws], shade=False, ax=ax, label=str_months[m], color=c[m])
     #sns.kdeplot(monthly_edgar[m][col_wd], shade=True, ax=ax, label='CHIM month #: '+str(m), color=c[m], linestyle="")
     #sns.kdeplot(monthly_edgar[m][col_ws], shade=True, ax=ax, label='CHIM month #: '+str(m), color=c[m], linestyle="")
     
@@ -457,17 +459,19 @@ for m in range(len(str_months)):
     #ax.set_xlabel(str_d13C)
     
     #2D
-    ax.scatter(df_pk2D.loc[df_pk2D['Month #']==month][col_d13C], df_pk2D.loc[df_pk2D['Month #']==month][col_dD], marker='o', color=c[m], label=month)
+    #ax.scatter(df_pk2D.loc[df_pk2D['Month #']==month][col_d13C], df_pk2D.loc[df_pk2D['Month #']==month][col_dD], marker='o', color=c[m], label=month)
     
 #ax.set_xticks([0, 90, 180, 270, 360])# For wind plots
 #ax.set_ylabel('Frequency')
-ax.set_ylabel(str_dD)
-ax.set_xlabel(str_d13C)
+#ax.set_ylabel(str_dD)
+#ax.set_xlabel(str_d13C)
+#ax.set_xlabel('Wind dir. [º]')
+ax.set_xlabel('Wind speed. [m/s]')
 ax.grid(axis='x')
 ax.grid(axis='y')
 ax.legend(loc='upper right',
                fancybox=False, framealpha=1, edgecolor='k')
-fig.savefig(f_path+'2D-diagram-monthly_original.png', bbox_inches='tight', dpi=600)
+fig.savefig(f_path+'hist_windspeed-monthly.png', bbox_inches='tight', dpi=600)
 
 #%%
 # Wind histograms+ correlation, IRMS-model & inventory-inventory comparison
@@ -495,6 +499,38 @@ fig_corwswd=plt.plot(df_IRMS[col_wd], df_IRMS[col_ws], '.')#, xlabel='Wind dir.'
 # CH4 EDGAR and CH4 TNO correlation
 corr_CH4inv=fg.correlation([df_edgar['Total']], [df_tno['Total']], 'EDGAR v5.0', 'TNO-CAMS v4.2')
 corr_CH4inv[0].savefig(f_path+today+'correlation_CH4_EDGAR-TNO.png', dpi=300, transparent=True)
+
+#%%
+# Interpolate the model datetimes to the measurement ones for histograms and correlation plots
+df_all=df_IRMS.join(pd.concat([pd.DataFrame({'ch4_EDGAR':np.interp(df_IRMS.index, df_edgar.index, df_edgar['Total']), 'd13C_EDGAR': np.interp(df_IRMS.index, df_edgar.index, df_edgar['d13C calc5']), 'dD_EDGAR':np.interp(df_IRMS.index, df_edgar.index, df_edgar['dD calc5'])}, index=df_IRMS.index),
+                               pd.DataFrame({'ch4_TNO':np.interp(df_IRMS.index, df_tno.index, df_tno['Total']), 'd13C_TNO': np.interp(df_IRMS.index, df_tno.index, df_tno['d13C calc5']), 'dD_TNO':np.interp(df_IRMS.index, df_tno.index, df_tno['dD calc5'])}, index=df_IRMS.index)], axis=1),
+                    )
+
+df_all_ch4=pd.DataFrame({col_MR:pd.concat([df_IRMS[col_MR_d13C], df_IRMS[col_MR_dD]]).dropna(), 'ch4_EDGAR':df_all['ch4_EDGAR'], 'ch4_TNO':df_all['ch4_TNO']})
+
+# Root Mean Square Error (unit ppb)
+np.sqrt(np.mean((df_all_ch4['ch4_TNO']-df_all_ch4[col_MR])**2))
+np.sqrt(np.mean((df_all_ch4['ch4_EDGAR']-df_all_ch4[col_MR])**2))
+
+# The other way around
+# Interpolate the observation time series to the model times, and make hourly average, to account for the representation error
+df_hourly=pd.DataFrame({col_MR+'_rep':np.interp(df_edgar.index, df_IRMS.index, df_IRMS.rolling('1h').mean()[col_MR]), col_MR+'_h':np.interp(df_edgar.index, df_IRMS.index, df_IRMS[col_MR])}, index=df_edgar.index)
+
+#%%
+# Correlation plots
+fig_corr_ch4=fg.correlation([df_all_ch4[col_MR], df_all_ch4[col_MR]], [df_all_ch4['ch4_EDGAR'], df_all_ch4['ch4_TNO']], namex='observed x(CH4)', namey='modeled x(CH4)', leg=[str_EDGAR, str_TNO])
+fig_corr_ch4_ssn=fg.correlation([df_all_ch4[col_MR], df_all_ch4[col_MR][t0:t1], df_all_ch4[col_MR][t1:t2]], [df_all_ch4['ch4_EDGAR'], df_all_ch4['ch4_EDGAR'][t0:t1], df_all_ch4['ch4_EDGAR'][t1:t2]], namex='observed x(CH4)', namey='modeled x(CH4)', leg=['all data', 'fall', 'winter'])
+fig_corr_ch4_rep=fg.correlation([df_hourly[col_MR+'_h'], df_hourly[col_MR+'_h']], [df_edgar['Total'], df_tno['Total']], namex='observed-hourly x(CH4)', namey='modeled x(CH4)', leg=[str_EDGAR, str_TNO])
+
+fig_corr_d13C=fg.correlation([df_all[col_d13C], df_all[col_d13C]], [df_all['d13C_EDGAR'], df_all['d13C_TNO']], namex='observed '+d13C, namey='modeled '+d13C, leg=[str_EDGAR, str_TNO])
+fig_corr_dD=fg.correlation([df_all[col_dD], df_all[col_dD]], [df_all['dD_EDGAR'], df_all['dD_TNO']], namex='observed '+dD, namey='modeled '+dD, leg=[str_EDGAR, str_TNO])
+
+fig_corr_ch4[0].savefig(f_path+today+'model-correlation_ch4.png', dpi=600, transparent=True, bbox_inches = 'tight', pad_inches = 0)
+fig_corr_ch4_ssn[0].savefig(f_path+today+'model-correlation_ch4-seasonal.png', dpi=600, transparent=True, bbox_inches = 'tight', pad_inches = 0)
+fig_corr_ch4_rep[0].savefig(f_path+today+'model-correlation_ch4-hourly.png', dpi=600, transparent=True, bbox_inches = 'tight', pad_inches = 0)
+
+fig_corr_d13C[0].savefig(f_path+today+'model-correlation_d13C.png', dpi=300)
+fig_corr_dD[0].savefig(f_path+today+'model-correlation_dD.png', dpi=300)
 
 #%%
 
@@ -587,6 +623,10 @@ fig_tno.tight_layout()
 
 avg_sources=df_samples.groupby('Source').mean()
 avg_SNAP=df_samples.groupby('SNAP').mean()
+std_sources=df_samples.groupby('Source').std()
+std_SNAP=df_samples.groupby('SNAP').std()
 
 avg_sources.to_csv(t_path+today+'samples_source-sig_average.csv')
 avg_SNAP.to_csv(t_path+today+'samples_SNAP-sig_average.csv')
+std_sources.to_csv(t_path+today+'samples_source-sig_stdev.csv')
+std_SNAP.to_csv(t_path+today+'samples_SNAP-sig_stdev.csv')

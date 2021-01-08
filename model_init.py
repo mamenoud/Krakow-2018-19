@@ -87,7 +87,7 @@ vertclair='xkcd:light green'
 
 f_path = '/Users/malika/surfdrive/Data/Krakow/Roof air/figures/'
 t_path = '/Users/malika/surfdrive/Data/Krakow/Roof air/tables/'
-today='2020-11-19 model_init/'
+today='2021-01-08 model_init/'
 
 #%%
 ###############################################################################
@@ -108,89 +108,92 @@ df_IRMS=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Input files/
 
 #%%
 # Model isotopic signatures calculations
-[d13C_agr, d13C_wst, d13C_ff, d13C_ffc, d13C_ffg, d13C_ffo, d13C_enb, d13C_oth, d13C_wet, d13C_bg] = [-63, -51.6, -49.1, -50.6, -47.6, -49.1, -49.1, -32.1, -73.2, -47.8]
-[dD_agr, dD_wst, dD_ff, dD_ffc, dD_ffg, dD_ffo, dD_enb, dD_oth, dD_wet, dD_bg] = [-359, -299, -189, -192, -194, -189, -189, -185, -323, -90]
 
-d13C_edgar=(d13C_agr*edgar_ch4['Agriculture']+d13C_wst*edgar_ch4['Waste']+d13C_ffc*edgar_ch4['FF_coal']+d13C_ffg*edgar_ch4['FF_gas']+d13C_ffo*edgar_ch4['FF_oil']+d13C_enb*edgar_ch4['ENB']+d13C_oth*edgar_ch4['Other']+d13C_wet*edgar_ch4['Wetland']+d13C_bg*edgar_ch4['BC'])/edgar_ch4['Total']
-d13C_tno=(d13C_agr*tno_ch4['Agriculture']+d13C_wst*tno_ch4['Waste']+d13C_ff*tno_ch4['FF']+d13C_enb*tno_ch4['ENB']+d13C_oth*tno_ch4['Other']+d13C_wet*tno_ch4['Wetland']+d13C_bg*tno_ch4['BC'])/tno_ch4['Total']
+def model_isotopes(sigs_d13C, sigs_dD, name):
+    
+    [d13C_agr, d13C_wst, d13C_ff, d13C_ffc, d13C_ffg, d13C_ffo, d13C_enb, d13C_oth, d13C_wet, d13C_bg]=sigs_d13C
+    [dD_agr, dD_wst, dD_ff, dD_ffc, dD_ffg, dD_ffo, dD_enb, dD_oth, dD_wet, dD_bg]=sigs_dD
+    
+    d13C_edgar=(d13C_agr*edgar_ch4['Agriculture']+d13C_wst*edgar_ch4['Waste']+d13C_ffc*edgar_ch4['FF_coal']+d13C_ffg*edgar_ch4['FF_gas']+d13C_ffo*edgar_ch4['FF_oil']+d13C_enb*edgar_ch4['ENB']+d13C_oth*edgar_ch4['Other']+d13C_wet*edgar_ch4['Wetland']+d13C_bg*edgar_ch4['BC'])/edgar_ch4['Total']
+    d13C_tno=(d13C_agr*tno_ch4['Agriculture']+d13C_wst*tno_ch4['Waste']+d13C_ff*tno_ch4['FF']+d13C_enb*tno_ch4['ENB']+d13C_oth*tno_ch4['Other']+d13C_wet*tno_ch4['Wetland']+d13C_bg*tno_ch4['BC'])/tno_ch4['Total']
 
-dD_edgar=(dD_agr*edgar_ch4['Agriculture']+dD_wst*edgar_ch4['Waste']+dD_ffc*edgar_ch4['FF_coal']+dD_ffg*edgar_ch4['FF_gas']+dD_ffo*edgar_ch4['FF_oil']+dD_enb*edgar_ch4['ENB']+dD_oth*edgar_ch4['Other']+dD_wet*edgar_ch4['Wetland']+dD_bg*edgar_ch4['BC'])/edgar_ch4['Total']
-dD_tno=(dD_agr*tno_ch4['Agriculture']+dD_wst*tno_ch4['Waste']+dD_ff*tno_ch4['FF']+dD_enb*tno_ch4['ENB']+dD_oth*tno_ch4['Other']+dD_wet*tno_ch4['Wetland']+dD_bg*tno_ch4['BC'])/tno_ch4['Total']
+    dD_edgar=(dD_agr*edgar_ch4['Agriculture']+dD_wst*edgar_ch4['Waste']+dD_ffc*edgar_ch4['FF_coal']+dD_ffg*edgar_ch4['FF_gas']+dD_ffo*edgar_ch4['FF_oil']+dD_enb*edgar_ch4['ENB']+dD_oth*edgar_ch4['Other']+dD_wet*edgar_ch4['Wetland']+dD_bg*edgar_ch4['BC'])/edgar_ch4['Total']
+    dD_tno=(dD_agr*tno_ch4['Agriculture']+dD_wst*tno_ch4['Waste']+dD_ff*tno_ch4['FF']+dD_enb*tno_ch4['ENB']+dD_oth*tno_ch4['Other']+dD_wet*tno_ch4['Wetland']+dD_bg*tno_ch4['BC'])/tno_ch4['Total']
+
+    return d13C_edgar.rename('d13C '+name), d13C_tno.rename('d13C '+name), dD_edgar.rename('dD '+name), dD_tno.rename('dD '+name)
+
 
 #%%
-# Make one df for each inventory
-df_edgar=edgar_ch4.join(pd.concat([d13C_edgar.rename('d13C calc5'), dD_edgar.rename('dD calc5')], axis=1))
+sigs_d13C_calc5 = [-63, -51.6, -48.5, -50.6, -47.6, -48.5, -48.5, -32.1, -73.2, -47.8]
+sigs_dD_calc5 = [-359, -299, -193, -192, -194, -193, -193, -185, -323, -90]
+d13C_edgar_calc5, d13C_tno_calc5, dD_edgar_calc5, dD_tno_calc5 = model_isotopes(sigs_d13C_calc5, sigs_dD_calc5, 'calc5')
 
-df_tno=tno_ch4.join(pd.concat([d13C_tno.rename('d13C calc5'), dD_tno.rename('dD calc5')], axis=1))
+sigs_d13C_calc6 = [-63, -51.6, -48.5, -50.6, -47.6, -48.5, -32.1, -48.5, -73.2, -47.8]
+sigs_dD_calc6 = [-359, -299, -193, -192, -194, -193, -185, -193, -323, -90]
+d13C_edgar_calc6, d13C_tno_calc6, dD_edgar_calc6, dD_tno_calc6 = model_isotopes(sigs_d13C_calc6, sigs_dD_calc6, 'calc6')
 
-#%%
+sigs_d13C_calc7 = [-63, -51.6, -48.5, -50.6, -47.6, -48.5, -32.1, -32.1, -73.2, -47.8]
+sigs_dD_calc7 = [-359, -299, -193, -192, -194, -193, -185, -185, -323, -90]
+d13C_edgar_calc7, d13C_tno_calc7, dD_edgar_calc7, dD_tno_calc7 = model_isotopes(sigs_d13C_calc7, sigs_dD_calc7, 'calc7')
+
+sigs_d13C_calc8 = [-63, -51.6, -48.5, -50.6, -47.6, -48.5, -48.5, -48.5, -73.2, -47.8]
+sigs_dD_calc8 = [-359, -299, -193, -192, -194, -193, -193, -193, -323, -90]
+d13C_edgar_calc8, d13C_tno_calc8, dD_edgar_calc8, dD_tno_calc8 = model_isotopes(sigs_d13C_calc8, sigs_dD_calc8, 'calc8')
+
 # Start from previous calc configuration
-df_edgar=pd.read_table(t_path+'/model/Krakow_CH4_EDGARv50_processed.csv', sep=',', index_col=0, parse_dates=True, keep_date_col=True)
-df_tno=pd.read_table(t_path+'/model/Krakow_CH4_TNO_CAMS_REGv221_processed.csv',sep=',', index_col=0, parse_dates=True, keep_date_col=True)
+#df_edgar=pd.read_table(t_path+'model/old/Krakow_CH4_EDGARv50_processed_dec2020.csv', sep=',', index_col=0, parse_dates=True, keep_date_col=True)
+#df_tno=pd.read_table(t_path+'model/old/Krakow_CH4_TNO_CAMS_REGv221_processed_dec2020.csv',sep=',', index_col=0, parse_dates=True, keep_date_col=True)
+
+# And add the new calc configurations
+df_edgar=edgar_ch4.join(pd.concat([d13C_edgar_calc5, dD_edgar_calc5, d13C_edgar_calc6, dD_edgar_calc6, d13C_edgar_calc7, dD_edgar_calc7, d13C_edgar_calc8, dD_edgar_calc8], axis=1))
+df_tno=tno_ch4.join(pd.concat([d13C_tno_calc5, dD_tno_calc5, d13C_tno_calc6, dD_tno_calc6, d13C_tno_calc7, dD_tno_calc7, d13C_tno_calc8, dD_tno_calc8], axis=1))
 
 #%%
 #########################
 # One function to evaluate one signature configuration
 #########################
 
-def eval_model(df_model, inventory, conf):
+def eval_model(df_model, inventory, scenari):
     
-    if inventory=='EDGAR':
-        df_model_bis=df_model[['Agriculture', 'Waste', 'FF_coal', 'FF_gas', 'FF_oil', 'ENB', 'Other', 'Wetland', 'BC', 'Total', 'd13C '+conf, 'dD '+conf]]
-    elif inventory=='TNO':
-        df_model_bis=df_model[['Agriculture', 'Waste', 'FF', 'ENB', 'Other', 'Wetland', 'BC', 'Total', 'd13C '+conf, 'dD '+conf]]
-    df_model_bis.rename(columns={'d13C '+conf:'d13C', 'dD '+conf:'dD'}, inplace=True)
+    for scenario in scenari:
+        
+        if inventory=='EDGAR':
+            df_model_bis=df_model[['Agriculture', 'Waste', 'FF_coal', 'FF_gas', 'FF_oil', 'ENB', 'Other', 'Wetland', 'BC', 'Total', 'd13C '+scenario, 'dD '+scenario]]
+        elif inventory=='TNO':
+            df_model_bis=df_model[['Agriculture', 'Waste', 'FF', 'ENB', 'Other', 'Wetland', 'BC', 'Total', 'd13C '+scenario, 'dD '+scenario]]
+        
+        df_model_bis.rename(columns={'d13C '+scenario:'d13C', 'dD '+scenario:'dD'}, inplace=True)
     
-    fig_overview, ax_overview = fg.overview_model(df_IRMS, df_model_bis, inventory)
-    fig_overview.savefig(f_path+today+'overview_'+inventory+'_'+conf+'.png', dpi=300)
-    # For overview with both, just copy this line
-    #fig_overview_chimere, ax_overview_chimere = fg.overview_model(df_IRMS, df_edgar, 'both', df_tno)
-    #
+        fig_overview, ax_overview = fg.overview_model(df_IRMS, df_model_bis, inventory)
+        fig_overview.savefig(f_path+today+'overview_'+inventory+'_'+scenario+'.png', dpi=300)
+        # For overview with both, just copy this line
+        #fig_overview_chimere, ax_overview_chimere = fg.overview_model(df_IRMS, df_edgar, 'both', df_tno)
+        #
     
-    df_merged=df_IRMS.join(pd.DataFrame({'ch4_'+inventory:np.interp(df_IRMS.index, df_model_bis.index, df_model_bis['Total']), 'd13C_'+inventory: np.interp(df_IRMS.index, df_model_bis.index, df_model_bis['d13C']), 'dD_'+inventory:np.interp(df_IRMS.index, df_model_bis.index, df_model_bis['dD'])}, index=df_IRMS.index)
-                    )
-    df_merged_ch4=pd.DataFrame({col_MR:pd.concat([df_IRMS[col_MR_d13C], df_IRMS[col_MR_dD]]).dropna(), 'ch4_'+inventory:df_merged['ch4_'+inventory]})
+        df_merged=df_IRMS.join(pd.DataFrame({'ch4_'+inventory:np.interp(df_IRMS.index, df_model_bis.index, df_model_bis['Total']), 'd13C_'+inventory: np.interp(df_IRMS.index, df_model_bis.index, df_model_bis['d13C']), 'dD_'+inventory:np.interp(df_IRMS.index, df_model_bis.index, df_model_bis['dD'])}, index=df_IRMS.index)
+                               )
+        df_merged_ch4=pd.DataFrame({col_MR:pd.concat([df_IRMS[col_MR_d13C], df_IRMS[col_MR_dD]]).dropna(), 'ch4_'+inventory:df_merged['ch4_'+inventory]})
     
-    fig_corr_ch4=fg.correlation([df_merged_ch4[col_MR]], [df_merged_ch4['ch4_'+inventory]], namex='observed x(CH4)', namey='modeled x(CH4)', leg=[inventory+'_'+conf])
-    fig_corr_d13C=fg.correlation([df_merged[col_d13C]], [df_merged['d13C_'+inventory]], namex='observed '+d13C, namey='modeled '+d13C, leg=[inventory+'_'+conf])
-    fig_corr_dD=fg.correlation([df_merged[col_dD]], [df_merged['dD_'+inventory]], namex='observed '+dD, namey='modeled '+dD, leg=[inventory+'_'+conf])
-    
-    fig_corr_ch4[0].savefig(f_path+today+'model-correlation_ch4_'+inventory+'_'+conf+'.png', dpi=300)
-    fig_corr_d13C[0].savefig(f_path+today+'model-correlation_d13C_'+inventory+'_'+conf+'.png', dpi=300)
-    fig_corr_dD[0].savefig(f_path+today+'model-correlation_dD_'+inventory+'_'+conf+'.png', dpi=300)
+        fig_corr_ch4=fg.correlation([df_merged_ch4[col_MR]], [df_merged_ch4['ch4_'+inventory]], namex='observed x(CH4)', namey='modeled x(CH4)', leg=[inventory+'_'+scenario])
+        fig_corr_d13C=fg.correlation([df_merged[col_d13C]], [df_merged['d13C_'+inventory]], namex='observed '+d13C, namey='modeled '+d13C, leg=[inventory+'_'+scenario])
+        fig_corr_dD=fg.correlation([df_merged[col_dD]], [df_merged['dD_'+inventory]], namex='observed '+dD, namey='modeled '+dD, leg=[inventory+'_'+scenario])
+        
+        fig_corr_ch4[0].savefig(f_path+today+'model-correlation_ch4_'+inventory+'_'+scenario+'.png', dpi=300)
+        fig_corr_d13C[0].savefig(f_path+today+'model-correlation_d13C_'+inventory+'_'+scenario+'.png', dpi=300)
+        fig_corr_dD[0].savefig(f_path+today+'model-correlation_dD_'+inventory+'_'+scenario+'.png', dpi=300)
     
     return
     
-eval_model(df_edgar, 'EDGAR', 'calc5')
-eval_model(df_tno, 'TNO', 'calc5')
-#%%
-# Plot model data with original datetimes
-fig_overview_edgar, ax_overview_edgar = fg.overview_model(df_IRMS, df_edgar, 'EDGAR')
-fig_overview_tno, ax_overview_tno = fg.overview_model(df_IRMS, df_tno, 'TNO')
-fig_overview_chimere, ax_overview_chimere = fg.overview_model(df_IRMS, df_edgar, 'both', df_tno, suf=' calc5')
-
-fig_overview_edgar.savefig(f_path+today+'overview_edgar.png', dpi=300)
-fig_overview_tno.savefig(f_path+today+'overview_tno.png', dpi=300)
-fig_overview_chimere.savefig(f_path+today+'overview_chimere.png', dpi=300, transparent=True)
+scenari = ['calc5', 'calc6', 'calc7', 'calc8']
+eval_model(df_edgar, 'EDGAR', scenari)
+eval_model(df_tno, 'TNO', scenari)
 
 #%%
-# Interpolate the model datetimes to the measurement ones for histograms and correlation plots
-df_all=df_IRMS.join(pd.concat([pd.DataFrame({'ch4_EDGAR':np.interp(df_IRMS.index, df_edgar.index, df_edgar['Total']), 'd13C_EDGAR': np.interp(df_IRMS.index, df_edgar.index, df_edgar['d13C calc5']), 'dD_EDGAR':np.interp(df_IRMS.index, df_edgar.index, df_edgar['dD calc5'])}, index=df_IRMS.index),
-                               pd.DataFrame({'ch4_TNO':np.interp(df_IRMS.index, df_tno.index, df_tno['Total']), 'd13C_TNO': np.interp(df_IRMS.index, df_tno.index, df_tno['d13C calc5']), 'dD_TNO':np.interp(df_IRMS.index, df_tno.index, df_tno['dD calc5'])}, index=df_IRMS.index)], axis=1),
-                    )
+# Plot model data with original datetimes, for both inventories 
 
-df_all_ch4=pd.DataFrame({col_MR:pd.concat([df_IRMS[col_MR_d13C], df_IRMS[col_MR_dD]]).dropna(), 'ch4_EDGAR':df_all['ch4_EDGAR'], 'ch4_TNO':df_all['ch4_TNO']})
-
-#%%
-# Correlation plots
-fig_corr_ch4=fg.correlation([df_all_ch4[col_MR], df_all_ch4[col_MR]], [df_all_ch4['ch4_EDGAR'], df_all_ch4['ch4_TNO']], namex='observed x(CH4)', namey='modeled x(CH4)', leg=[str_EDGAR, str_TNO])
-fig_corr_d13C=fg.correlation([df_all[col_d13C], df_all[col_d13C]], [df_all['d13C_EDGAR'], df_all['d13C_TNO']], namex='observed '+d13C, namey='modeled '+d13C, leg=[str_EDGAR, str_TNO])
-fig_corr_dD=fg.correlation([df_all[col_dD], df_all[col_dD]], [df_all['dD_EDGAR'], df_all['dD_TNO']], namex='observed '+dD, namey='modeled '+dD, leg=[str_EDGAR, str_TNO])
-
-fig_corr_ch4[0].savefig(f_path+today+'model-correlation_ch4.png', dpi=300)
-fig_corr_d13C[0].savefig(f_path+today+'model-correlation_d13C.png', dpi=300)
-fig_corr_dD[0].savefig(f_path+today+'model-correlation_dD.png', dpi=300)
-
+for scenario in scenari:
+    fig=fg.overview(df_IRMS, data_CHIM=[df_edgar, df_tno], suf=scenario)
+    fig.savefig(f_path+today+'overview_chimere_'+scenario+'.png', dpi=600, transparent=True, bbox_inches = 'tight', pad_inches = 0)
 
 #%%
 # Contributions of each source
@@ -204,6 +207,8 @@ for s in sources_tno:
     df_tno[s+' added'] = tno_ch4[s]/(tno_ch4['Total']-tno_ch4['BC'])
 
 #%%
-# Save the merged model tables
-df_edgar.to_csv(t_path+'model/Krakow_CH4_EDGARv50_processed.csv')
-df_tno.to_csv(t_path+'model/Krakow_CH4_TNO_CAMS_REGv221_processed.csv')
+# Add model wind and ave the merged model tables
+df_Wmod=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Modeled/wind_speed_direction_KRK_20180914_20190314_CHIMERE.csv', sep=';', index_col=0, parse_dates=True)
+
+df_edgar.join(df_Wmod).to_csv(t_path+'model/Krakow_CH4_EDGARv50_processed.csv')
+df_tno.join(df_Wmod).to_csv(t_path+'model/Krakow_CH4_TNO_CAMS_REGv221_processed.csv')

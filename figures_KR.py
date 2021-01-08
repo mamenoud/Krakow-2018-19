@@ -55,8 +55,8 @@ dD='\u03B4D'
 permil=' [\u2030]'
 pm=' \u00B1 '
 
-deltaD=dD+' SMOW'+permil
-delta13C=d13C+' VPDB'+permil
+deltaD=dD+' V-SMOW'+permil
+delta13C=d13C+' V-PDB'+permil
 
 MRx='1/MR'
 eMRx='err_1/MR'
@@ -114,8 +114,9 @@ def correlation(x, y, namex, namey, leg=None, xy=False):
     #ymax=np.nanmax(y)+mar*midy
     
     n=len(x)
-    if n>2:
+    if n>3:
         colors=plt.get_cmap('brg', n+1)
+        colors=[web_red, vertclair, web_blue]
     else:
         colors=[web_red, vertclair, web_blue]
     fig = plt.subplots(1,1, figsize=(10,10))
@@ -142,7 +143,7 @@ def correlation(x, y, namex, namey, leg=None, xy=False):
         if xy==False:
             plt.plot(lin11, color='grey', linestyle=':', linewidth=0.7)
         
-        if n>2:
+        if n>3:
             #plot data points
             plt.scatter(y=y[i], x=x[i], color=colors(i), marker='x')
             #plot the regression line
@@ -400,7 +401,7 @@ def wind_rose(direction, var, name, title):
 def overview_pk(data_obs, data_obs_pk, data_model_pk, data_model=None, names=None):
     
     colors_obs=['k', 'green', 'orange', 'black']
-    colors_model=[web_red, 'green', 'blue']
+    colors_model=[web_red, web_green, web_magenta, web_cyan]
     cm_blue=np.array(cmocean.cm.balance(0.15))
     cm_cyan=np.array(cmocean.cm.balance(0.45))
     cm_red=np.array(cmocean.cm.balance(0.85))
@@ -413,6 +414,7 @@ def overview_pk(data_obs, data_obs_pk, data_model_pk, data_model=None, names=Non
     ax2=axes[1]
     ax3=axes[2]
     ax4=axes[3]
+    ax4b=ax4.twinx()
     
     # Graph of the wind (top or bottom)
     wind_bar=np.array([max(data_obs[col_MR])]*len(data_obs))
@@ -474,6 +476,11 @@ def overview_pk(data_obs, data_obs_pk, data_model_pk, data_model=None, names=Non
         sources_c=[web_green, web_green, vertclair, cm_red, cm_red, cm_red, cm_red, cm_blue, cm_blue]
         s_labels=[]
         for df in data_model:
+            
+            # Modelled wind
+            wind_color=cmocean.cm.balance(norm(df['averageWindDirection'].values))
+            ax4b.bar(x=df.index, height=df['averageWindSpeed'], color=wind_color, width=0.045, alpha=0.8)
+        
             df.plot(y='Total', ax=ax1, markersize=1, style='-',  color=colors_model[j], legend=False)
             ch4_added=df['BC']
             ns=0
@@ -528,6 +535,8 @@ def overview_pk(data_obs, data_obs_pk, data_model_pk, data_model=None, names=Non
     ax2.set_ylabel(d13C+' [\u2030]')
     ax2.yaxis.set_major_locator(plt.MaxNLocator(5))
     ax2.set_xlim(mint, maxt)
+    ax2.set_ylim([-55, -40])
+    ax2.yaxis.tick_right()
     ax2.axhline(y=-47.8, lw=1, color='k', ls='--')# horizontal line for background signature
     
     # dD plot
@@ -536,8 +545,13 @@ def overview_pk(data_obs, data_obs_pk, data_model_pk, data_model=None, names=Non
     ax3.set_ylim([-300, -120])
     ax3.set_xlim(mint, maxt)    
     
-    ax4.set_ylabel('Wind speed [m/s]')
+    ax4.set_ylabel('Wind speed [m/s]\n-observed')
+    ax4.set_ylim([0, 6])
+    ax4b.set_ylim([0, 6])
+    ax4b.invert_yaxis()
+    ax4b.set_ylabel('Wind speed [m/s]\n-modelled')
     
+    # Bottom date axis formatting
     ax4.xaxis_date()
     ax4.format_xdata = mdates.DateFormatter('%Y-%b')
     #ax4.xaxis.set_major_formatter(mdates.DateFormatter('%b-%d'))
@@ -550,11 +564,11 @@ def overview_pk(data_obs, data_obs_pk, data_model_pk, data_model=None, names=Non
     ax1.legend(handles=s_labels, fontsize=12, loc='lower left', bbox_to_anchor=(0.85, 0.5))
     
     # Wind colorbar
-    #cax4 = figure.add_axes([0.74, 0.31, 0.15, 0.015])
-    #sm = ScalarMappable(cmap=cmocean.cm.balance, norm=norm)
-    #sm.set_array([])
-    #cbar = plt.colorbar(sm, cax=cax4, orientation='horizontal', ticks=[0, 180, 360])
-    #cbar.set_label('Wind dir. [º]', rotation=0,labelpad=0)
+    cax4 = figure.add_axes([0.73, 0.285, 0.15, 0.015])
+    sm = ScalarMappable(cmap=cmocean.cm.balance, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm, cax=cax4, orientation='horizontal', ticks=[0, 180, 360])
+    cbar.set_label('Wind dir. [º]', rotation=0,labelpad=0)
     
     ax1.grid(which= 'major', axis='both', linestyle='-', linewidth=0.4)
     ax2.grid(which= 'major', axis='both', linestyle='-', linewidth=0.4)
@@ -587,16 +601,16 @@ def overview_ch4(data_obs, data_mod, inventory, data2_mod=None):
     return figure
 
 
-def overview(data_obs, data_P=None, data_CHIM=None, data_MH=None):
+def overview(data_obs, data_P=None, data_CHIM=None, data_MH=None, suf=''):
     
-    plt.rcParams.update({'font.size': 22})
+    plt.rcParams.update({'font.size': 16})
     
-    c13C='#333399'
-    cD='#333399'
+    c13C=web_blue
+    cD=web_blue
     colors=['red', 'green', 'green', 'black', 'black']
     c_MH=web_cyan
     
-    figure, axes = plt.subplots(nrows=3, ncols=1, figsize=(15,10), sharex=True)
+    figure, axes = plt.subplots(nrows=3, ncols=1, figsize=(15,10), sharex=True, gridspec_kw = {'hspace':0})
     ax1=axes[0]
     ax2=axes[1]
     ax3=axes[2]
@@ -604,32 +618,44 @@ def overview(data_obs, data_P=None, data_CHIM=None, data_MH=None):
     if data_P is not None:
         data_P.plot(y=col_P, ax=ax1, color=cP, lw=0.7, label='CRDS')
         
-    data_obs.plot(y=col_MR_d13C, ax=ax1, markersize=1.5, style='.',  mec=c13C, mfc=c13C, label='IRMS')
-    data_obs.plot(y=col_d13C, markersize=1.5, style='.', legend=False, ax=ax2, mec=c13C, mfc=c13C)
+    data_obs.plot(y=col_MR_d13C, ax=ax1, markersize=1, style='o',  mec='none', mfc=web_red, legend=False)#, label='IRMS')
+    data_obs.plot(y=col_MR_d13C+'_vo', ax=ax1, markersize=1, style='o',  mec=c13C, mfc=c13C, legend=False)#, label='IRMS')
     
-    data_obs.plot(y=col_MR_dD, ax=ax1, markersize=1.5, style='.',  mec=cD, mfc=cD, legend=False)
-    data_obs.plot(y=col_dD, markersize=1.5, style='.', legend=False, ax=ax3, mec=cD, mfc=cD)
+    data_obs.plot(y=col_d13C, markersize=1, style='o', legend=False, ax=ax2, mec=c13C, mfc=c13C)
+    
+    data_obs.plot(y=col_MR_dD, ax=ax1, markersize=1, style='o',  mec='none', mfc=web_red, legend=False)
+    data_obs.plot(y=col_MR_dD+'_vo', ax=ax1, markersize=1, style='o',  mec=cD, mfc=cD, legend=False)
+    
+    data_obs.plot(y=col_dD, markersize=1, style='o', legend=False, ax=ax3, mec=cD, mfc=cD)
     
     if data_CHIM is not None:
         i=0
         for df in data_CHIM:
             df.plot(y='Total', ax=ax1, color=colors[i], lw=0.7, legend=False)
-            df.plot(y='d13C calc5', ax=ax2, color=colors[i], lw=0.7, legend=False)
-            df.plot(y='dD calc5', ax=ax3, color=colors[i], lw=0.7, legend=False)
+            df.plot(y='d13C '+suf, ax=ax2, color=colors[i], lw=0.7, legend=False)
+            df.plot(y='dD '+suf, ax=ax3, color=colors[i], lw=0.7, legend=False)
             i=i+1
             
     if data_MH is not None:
-        data_MH.plot(y='CH4', ax=ax1, color=c_MH, lw=0.7, label='Mace Head')
+        data_MH.plot(y='CH4', ax=ax1, color=c_MH, lw=0.7, legend=False)#, label='Mace Head')
         
     ax1.set_ylabel('x(CH4) [ppb]')
+    ax1.yaxis.set_major_locator(plt.MaxNLocator(5))
     #ax1.legend(['[CH4] IRMS '+d13C, '[CH4] IRMS '+dD], markerscale=5, loc=1, fontsize='x-small')
     
-    ax2.set_ylabel(d13C+permil)
+    ax2.set_ylabel(delta13C)
+    ax2.yaxis.set_major_locator(plt.MaxNLocator(5))
+    ax2.yaxis.tick_right()
     #ax2.legend(['IRMS '+d13C], markerscale=5, loc=3, fontsize='x-small')
     
-    ax3.set_ylabel(dD+permil)
+    ax3.set_ylabel(deltaD)
+    ax3.yaxis.set_major_locator(plt.MaxNLocator(5))
     ax3.set_xlabel('Months')
     #ax3.legend(['IRMS '+dD], markerscale=5, loc=3, fontsize='x-small')
+    
+    ax1.grid(which= 'major', axis='both', linestyle='-', linewidth=0.4)
+    ax2.grid(which= 'major', axis='both', linestyle='-', linewidth=0.4)
+    ax3.grid(which= 'major', axis='both', linestyle='-', linewidth=0.4)
     
     return figure
 
@@ -679,62 +705,153 @@ def wind_contour(direction, var, name, fill, title, fig=None):
     return fig
 
 
-def top_diagrams(list_df, list_labels, sufs, ambient=None, patches=True, title=None):
+def top_diagrams(list_df, list_labels, sufs, ambient=None, patches=True, lit_coal=None):
         
+    plt.rcParams.update({'font.size': 22})
+    
+    cm_blue=np.array(cmocean.cm.balance(0.15))
+    cm_cyan=np.array(cmocean.cm.balance(0.45))
+    cm_red=np.array(cmocean.cm.balance(0.85))
+    
     # Axis limits
-    lim_dD=[-420, -50]
-    lim_d13C=[-80, -10]
+    lim_dD=[-370, -82]
+    lim_d13C=[-77, -38]
     
     # Define the boundaries of the patches, and their color
         
-    x_mf=[-90, -50, -50, -90]
+    x_mf=[-90, -50, -50, -90]       # microbial fermentation
     y_mf=[-275, -275, -450, -450]
-    c_m='xkcd:neon green'
+    c_m=cm_cyan
     
-    x_mc=[-90, -60, -60, -90]
+    x_mc=[-90, -60, -60, -90]       # microbial CO2 reduction
     y_mc=[-125, -125, -350, -350]
     #c_mc='xkcd:neon green'
         
-    x_w=[-61.5, -46, -46, -61.5]
-    y_w=[-252, -252, -330, -330]
-    c_w='xkcd:neon pink'
-        
-    x_t=[-40, -20, -40, -75]
+    x_t=[-40, -20, -40, -75]        # thermogenic
     y_t=[-100, -140, -300, -350]
-    c_t='xkcd:neon blue'
+    c_t='gray'
         
-    x_p=[-30, -15, -15, -30]
+    x_p=[-30, -15, -15, -30]        # pyrogenic
     y_p=[-100, -100, -250, -250]
-    c_p='xkcd:neon yellow'
+    c_p='k'
+    
+    x_w=[-66.7, -41.1, -41.1, -66.7]    # MEMO2 waste
+    y_w=[-229, -229, -381, -381]
+    xy_w=(-53.9, -305)
+    [w_w, h_w]=[12.8, 76]
+    #c_w='xkcd:neon pink'
+    xy_w=(-55.4,-298)                   # Sherwood waste
+    [w_w, h_w]=[15,21.2]
+    
+    x_a=[-73, -45, -45, -73]           # MEMO2 agriculture
+    y_a=[-268, -268, -364, -364]
+    xy_a=(-59,-316)
+    [w_a, h_a]=[14,48]
+    #c_w='xkcd:neon pink'
+    xy_a=(-67.05,-304.5)                # Sherwood agriculture
+    [w_a, h_a]=[21.76,77]
+    
+    x_ff=[-61, -29, -29, -61]           # MEMO2 Fossil fuels
+    y_ff=[-260, -260, -112, -112]
+    xy_ff=(-45, -186)
+    [w_ff, h_ff]=[16,74]
+    #c_w='xkcd:neon pink'
+    
+    x_pl=[-32, -9, -9, -32]             # pyrogenic
+    y_pl=[-81, -81, -232, -232]
+    xy_pl=(-20.5,-165.5)
+    [w_pl, h_pl]=[11.5,75.5]
+    #c_p='xkcd:neon yellow'
+    
+    xk_w=[-56, -45.4, -45.4, -56]       # KRK waste
+    yk_w=[-251, -251, -338, -338]
+    xyk_w=(-52.48, -308.1)
+    [wk_w, hk_w]=[11.1, 85.7]
+    #c_w='xkcd:neon pink'
+    
+    xk_a=[-64, -62, -62, -64]           # KRK agriculture
+    yk_a=[-358, -358, -360, -360]
+    xyk_a=(-63,-359)
+    [wk_a, hk_a]=[4.8,10.3]
+    #c_w='xkcd:neon pink'
+    
+    xk_gas=[-52.4, -44, -44, -52.4]           # KRK Natural gas
+    yk_gas=[-226, -226, -176, -176]
+    xyk_gas=(-47.09, -185.9)
+    [wk_gas, hk_gas]=[7.98,55.2]
+    #c_w='xkcd:neon pink'
+    
+    xk_coal=[-58.9, -28, -28, -58.9]           # KRK coal
+    yk_coal=[-254, -254, -139, -139]
+    xyk_coal=(-51.1, -196.5)
+    [wk_coal, hk_coal]=[11.25,95.4]
+    
+    xk_lit=[-75.7, -43.4, -43.4, -75.7]           # KRK coal in literature
+    yk_lit=[-243, -243, -147, -147]
+    xyk_lit=(-68.1, -182)
+    [wk_lit, hk_lit]=[41.1,50.8]
     
     #x_air=[ambient['avg_d13C']-2*ambient['std_d13C'], ambient['avg_d13C'], ambient['avg_d13C']+2*ambient['std_d13C'], ambient['avg_d13C']]
     #y_air=[ambient['avg_dD'], ambient['avg_dD']+2*ambient['std_dD'], ambient['avg_dD'], ambient['avg_dD']-2*ambient['std_dD']]
-    c_amb='gray' 
-    c=['black', web_red, web_blue, web_green]
+    c_amb='white' 
+    c=[web_blue, web_red, 'black', web_green]
     
     # Make the figure
-    top_fig_top= plt.figure(figsize=(15,15))
+    top_fig_top= plt.figure(figsize=(10,10))
     top_top=top_fig_top.add_subplot(111)
+    
+    # grid?
+    top_top.grid(which= 'major', axis='both', linestyle='-')
 
     # Add the areas
-    top_top.fill(x_mf, y_mf, alpha=0.5, c=c_m)
-    top_top.fill(x_mc, y_mc, alpha=0.1, c=c_m)
+    #top_top.fill(x_mf, y_mf, alpha=0.1, c=c_m)
+    #top_top.fill(x_mc, y_mc, alpha=0.3, c=c_m)
     #top_top.fill(x_w, y_w, alpha=0.5, c=c_w)
-    top_top.fill(x_t, y_t, alpha=0.5, c=c_t)
-    top_top.fill(x_p, y_p, alpha=0.5, c=c_p)
+    #top_top.fill(x_t, y_t, alpha=0.3, c=c_t)
+    #top_top.fill(x_p, y_p, alpha=0.5, c=c_p)
     # ... and corresponding patches
-    biof_patch = mpatches.Patch(color=c_m, label='Microbial -fermentation', alpha=0.5)
-    bioc_patch = mpatches.Patch(color=c_m, label='Microbial -C-reduction', alpha=0.1)
+    #biof_patch = mpatches.Patch(color=c_m, label='Microbial -fermentation', alpha=0.1)
+    #bioc_patch = mpatches.Patch(color=c_m, label='Microbial -C-reduction', alpha=0.3)
     #waste_patch = mpatches.Patch(color=c_w, label='Waste', alpha=0.5)
-    thermo_patch = mpatches.Patch(color=c_t, label='Thermogenic', alpha=0.5)
-    pyro_patch = mpatches.Patch(color=c_p, label='Pyrogenic', alpha=0.5)
-        
+    #thermo_patch = mpatches.Patch(color='gray', label='Thermogenic', alpha=0.3)
+    #pyro_patch = mpatches.Patch(color='k', label='Pyrogenic', alpha=0.5)
+      
+    # Make the ellipses
+    
+    # Samples (filled)
+    ell_ka=mpatches.Ellipse(xyk_a, wk_a, hk_a, ls='--', color='k', alpha=0.2, label='Ruminants')
+    ell_kw=mpatches.Ellipse(xyk_w, wk_w, hk_w, ls='--', color=vertclair, alpha=0.5, label='Waste')
+    #ell_ff=mpatches.Ellipse(xy_ff, w_ff, h_ff, ls='--', color=web_red, alpha=0.5, label='Fossil fuels')
+    ell_gas=mpatches.Ellipse(xyk_gas, wk_gas, hk_gas, ls='--', color=cm_red, alpha=0.2, label='Natural gas')
+    ell_coal=mpatches.Ellipse(xyk_coal, wk_coal, hk_coal, ls='--', color=web_red, alpha=0.2, label='USCB coal mines')
+     #ell_pl=mpatches.Ellipse(xy_pl, w_pl, h_pl, ls='--', color=cm_red, alpha=0.2, label='Pyrogenic') #fill=False, ec='gray'))
+    
+    # Litterature (dashed)
+    #ell_w=mpatches.Ellipse(xy_w, w_w, h_w, ls='--', ec=vertclair, fill=False, label='Waste')
+    #ell_a=mpatches.Ellipse(xy_a, w_a, h_a, ls='--', ec='gray', fill=False, label='Ruminants')
+    #ell_lit=mpatches.Ellipse(xyk_lit, wk_lit, hk_lit, ls='--', ec=cm_red, fill=False, label='USCB coal mines')
+    if lit_coal is not None:
+        lit_coal.plot(kind='scatter', ax=top_top, x='d13C_CH4', y='d2H_CH4', marker='o', color=web_red, zorder=1)
+        lit_patch = mlines.Line2D([], [], color=web_red, marker='o',
+                      markersize=5, label='USCB literature', linestyle='')
+    
+    # Add the ellipses
+    top_top.add_patch(ell_ka)
+    top_top.add_patch(ell_kw)
+    top_top.add_patch(ell_coal)
+    top_top.add_patch(ell_gas)
+    #top_top.add_patch(ell_ff)
+    #top_top.add_patch(ell_pl)
+    #top_top.add_patch(ell_a)
+    #top_top.add_patch(ell_w)
+    #top_top.add_patch(ell_lit)
+    
     # Add the ambient air point
     if ambient is not None:
-        top_top.scatter(x=ambient['avg_d13C'], y=ambient['avg_dD'], c=c_amb,  s=150)
+        top_top.scatter(x=ambient['avg_d13C'], y=ambient['avg_dD'], marker='o', c=c_amb, edgecolors='k',  s=150)
     # ... and corresponding patches
-        air_patch = mlines.Line2D([], [], color=c_amb, marker='o',
-                      markersize=15, label='Ambient air', linestyle='')
+        air_patch = mlines.Line2D([], [], markerfacecolor=c_amb, marker='o',
+                      markersize=15, markeredgecolor='k', label='Ambient air', linestyle='')
 
     data_patches=[]
     i=0
@@ -746,14 +863,23 @@ def top_diagrams(list_df, list_labels, sufs, ambient=None, patches=True, title=N
         i=i+1
         
     # add legend
-    all_patches=[biof_patch, bioc_patch, thermo_patch, pyro_patch, air_patch]+data_patches
-    top_fig_top.legend(handles=all_patches, bbox_to_anchor=(0.55, 0.38), loc=2, borderaxespad=0.5)
-
+    #all_patches=[biof_patch, bioc_patch, thermo_patch, pyro_patch, air_patch]+data_patches
+    #KRK_patches=[ell_a, ell_w, ell_coal, ell_gas, air_patch]
+    #top_fig_top.legend(handles=all_patches, bbox_to_anchor=(0.55, 0.38), loc=2, borderaxespad=0.5)
+    #top_fig_top.legend(handles=KRK_patches)#, loc='lower right')#, borderaxespad=0.5)
+    
+    # ...or annotate the patches
+    top_top.annotate("Ruminants", xy=xyk_a, xytext=(1, 12), textcoords='offset points', color='gray')
+    top_top.annotate("Waste", xy=xyk_w, xytext=(70, -60), textcoords='offset points', color=vertclair)
+    top_top.annotate("Network gas", xy=xyk_gas, xytext=(6, 60), textcoords='offset points', color=cm_red)#, arrowprops=dict(arrowstyle="->",connectionstyle="arc3",color=cm_red))
+    top_top.annotate("USCB coal mines", xy=xyk_coal, xytext=(-240, -70), textcoords='offset points', color=web_red)
+    top_top.annotate("Ambient", xy=(ambient['avg_d13C'], ambient['avg_dD']), xytext=(-90, -10), textcoords='offset points', color='k')
+    
     # Arrange the axis limits
     plt.xlim(lim_d13C)
     plt.ylim(lim_dD)
-    plt.xlabel(d13C+permil)
-    plt.ylabel(dD+permil)
+    plt.xlabel(delta13C)
+    plt.ylabel(deltaD)
 
     #top_fig_top.savefig('figures/top_diagram_'+title+'.png', dpi=300, bbox_inches='tight')
     

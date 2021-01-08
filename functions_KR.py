@@ -492,10 +492,18 @@ def two_isotopes(peaks_D, peaks_13C, t_lim, iso=None, suf=''):
             col_t_l=col_dt_dD+suf
             delta_l=col_dD+suf
             errdelta_l=col_errdD+suf
+            winddir_l=col_wd+'_dD'+suf
+            errwinddir_l=col_errwd+'_dD'+suf
+            windspeed_l=col_ws+'_dD'+suf
+            errwindspeed_l=col_errws+'_dD'+suf
         elif iso=='13C': # it means we have only one isotope & model is the largest
             col_t_s=col_dt_d13C+suf
             delta_s=col_d13C+suf
             errdelta_s=col_errd13C+suf
+            winddir_s=col_wd+'_d13C'+suf
+            errwinddir_s=col_errwd+'_d13C'+suf
+            windspeed_s=col_ws+'_d13C'+suf
+            errwindspeed_s=col_errws+'_d13C'+suf
         if iso is not None:
             str_l='_model'
             str_s='_obs'
@@ -523,10 +531,18 @@ def two_isotopes(peaks_D, peaks_13C, t_lim, iso=None, suf=''):
             col_t_s=col_dt_dD+suf
             delta_s=col_dD+suf
             errdelta_s=col_errdD+suf
+            winddir_s=col_wd+'_dD'+suf
+            errwinddir_s=col_errwd+'_dD'+suf
+            windspeed_s=col_ws+'_dD'+suf
+            errwindspeed_s=col_errws+'_dD'+suf
         elif iso=='13C': # it means we have only one isotope & model is the shortest
             col_t_l=col_dt_d13C+suf
             delta_l=col_d13C+suf
             errdelta_l=col_errd13C+suf
+            winddir_l=col_wd+'_d13C'+suf
+            errwinddir_l=col_errwd+'_d13C'+suf
+            windspeed_l=col_ws+'_d13C'+suf
+            errwindspeed_l=col_errws+'_d13C'+suf
         if iso is not None:
             str_l='_obs'
             str_s='_model'
@@ -563,8 +579,8 @@ def two_isotopes(peaks_D, peaks_13C, t_lim, iso=None, suf=''):
     new_skeemed = new.loc[new['time diff']<t_lim]  # remove the peaks that were matched but are more than t_lim appart
 
     if iso is not None:
-        df_l = pd.DataFrame({'DateTime_d'+iso+suf: new_skeemed[col_t_l+str_l], 'start_DateTime_d'+iso+suf: new_skeemed['start_DateTime_d'+iso+suf+str_l],'end_DateTime_d'+iso+suf: new_skeemed['end_DateTime_d'+iso+suf+str_l], delta_l: new_skeemed[delta_l+str_l], errdelta_l: new_skeemed[errdelta_l+str_l], winddir_l: new_skeemed[winddir_l+suf], errwinddir_l: new_skeemed[errwinddir_l+suf], windspeed_l: new_skeemed[windspeed_l+suf], errwindspeed_l: new_skeemed[windspeed_l+suf]})
-        df_s = pd.DataFrame({'DateTime_d'+iso+suf: new_skeemed[col_t_s+str_s], 'start_DateTime_d'+iso+suf: new_skeemed['start_DateTime_d'+iso+suf+str_s],'end_DateTime_d'+iso+suf: new_skeemed['end_DateTime_d'+iso+suf+str_s], delta_s: new_skeemed[delta_s+str_s], errdelta_s: new_skeemed[errdelta_s+str_s], winddir_s: new_skeemed[winddir_s+suf], errwinddir_s: new_skeemed[errwinddir_s+suf], windspeed_s: new_skeemed[windspeed_s+suf], errwindspeed_s: new_skeemed[windspeed_s+suf]})
+        df_l = pd.DataFrame({'DateTime_d'+iso+suf: new_skeemed[col_t_l+str_l], 'start_DateTime_d'+iso+suf: new_skeemed['start_DateTime_d'+iso+suf+str_l],'end_DateTime_d'+iso+suf: new_skeemed['end_DateTime_d'+iso+suf+str_l], delta_l: new_skeemed[delta_l+str_l], errdelta_l: new_skeemed[errdelta_l+str_l], winddir_l: new_skeemed[winddir_l+suf+str_l], errwinddir_l: new_skeemed[errwinddir_l+suf+str_l], windspeed_l: new_skeemed[windspeed_l+suf+str_l], errwindspeed_l: new_skeemed[windspeed_l+suf+str_l]})
+        df_s = pd.DataFrame({'DateTime_d'+iso+suf: new_skeemed[col_t_s+str_s], 'start_DateTime_d'+iso+suf: new_skeemed['start_DateTime_d'+iso+suf+str_s],'end_DateTime_d'+iso+suf: new_skeemed['end_DateTime_d'+iso+suf+str_s], delta_s: new_skeemed[delta_s+str_s], errdelta_s: new_skeemed[errdelta_s+str_s], winddir_s: new_skeemed[winddir_s+suf+str_s], errwinddir_s: new_skeemed[errwinddir_s+suf+str_s], windspeed_s: new_skeemed[windspeed_s+suf+str_s], errwindspeed_s: new_skeemed[windspeed_s+suf+str_s]})
         if str_l=='_obs':
             #df_out = [df_l, df_s]
             df_out = pd.concat([df_l, df_s], axis=1)
