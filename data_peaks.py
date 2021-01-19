@@ -168,6 +168,30 @@ df_pkd13C_tno8 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tab
                      names=['peak ID -d13C', col_dt_d13C,	'start_'+col_dt_d13C,	'end_'+col_dt_d13C, col_d13C,	col_errd13C,	'slope_d13C',	'r2_d13C', 'res_d13C',	'n_d13C', col_wd+'_d13C', col_errwd+'_d13C', col_ws+'_d13C', col_errws+'_d13C'])
 df_PKE_tno8 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-08 data_signatures/PKE_tno8_prom=100ppb_minH=1996.73776ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True)
 
+df_pkdD_edgar9 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE-dD_edgar9_prom=100ppb_minH=1988.5753799999998ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True, header=0,
+                     names=['peak ID -dD', col_dt_dD,	'start_'+col_dt_dD,	'end_'+col_dt_dD, col_dD,	col_errdD,	'slope_dD',	'r2_dD', 'res_dD',	'n_dD', col_wd+'_dD', col_errwd+'_dD', col_ws+'_dD', col_errws+'_dD'])
+df_pkd13C_edgar9 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE-d13C_edgar9_prom=100ppb_minH=1988.5753799999998ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True, header=0,
+                     names=['peak ID -d13C', col_dt_d13C,	'start_'+col_dt_d13C,	'end_'+col_dt_d13C, col_d13C,	col_errd13C,	'slope_d13C',	'r2_d13C', 'res_d13C',	'n_d13C', col_wd+'_d13C', col_errwd+'_d13C', col_ws+'_d13C', col_errws+'_d13C'])
+df_PKE_edgar9 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE_edgar9_prom=100ppb_minH=1988.5753799999998ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True)
+
+df_pkdD_tno9 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE-dD_tno9_prom=100ppb_minH=1996.73776ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True, header=0,
+                     names=['peak ID -dD', col_dt_dD,	'start_'+col_dt_dD,	'end_'+col_dt_dD, col_dD,	col_errdD,	'slope_dD',	'r2_dD', 'res_dD',	'n_dD', col_wd+'_dD', col_errwd+'_dD', col_ws+'_dD', col_errws+'_dD'])
+df_pkd13C_tno9 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE-d13C_tno9_prom=100ppb_minH=1996.73776ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True, header=0,
+                     names=['peak ID -d13C', col_dt_d13C,	'start_'+col_dt_d13C,	'end_'+col_dt_d13C, col_d13C,	col_errd13C,	'slope_d13C',	'r2_d13C', 'res_d13C',	'n_d13C', col_wd+'_d13C', col_errwd+'_d13C', col_ws+'_d13C', col_errws+'_d13C'])
+df_PKE_tno9 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE_tno9_prom=100ppb_minH=1996.73776ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True)
+
+df_pkdD_edgar10 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE-dD_edgar10_prom=100ppb_minH=1988.5753799999998ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True, header=0,
+                     names=['peak ID -dD', col_dt_dD,	'start_'+col_dt_dD,	'end_'+col_dt_dD, col_dD,	col_errdD,	'slope_dD',	'r2_dD', 'res_dD',	'n_dD', col_wd+'_dD', col_errwd+'_dD', col_ws+'_dD', col_errws+'_dD'])
+df_pkd13C_edgar10 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE-d13C_edgar10_prom=100ppb_minH=1988.5753799999998ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True, header=0,
+                     names=['peak ID -d13C', col_dt_d13C,	'start_'+col_dt_d13C,	'end_'+col_dt_d13C, col_d13C,	col_errd13C,	'slope_d13C',	'r2_d13C', 'res_d13C',	'n_d13C', col_wd+'_d13C', col_errwd+'_d13C', col_ws+'_d13C', col_errws+'_d13C'])
+df_PKE_edgar10 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE_edgar10_prom=100ppb_minH=1988.5753799999998ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True)
+
+df_pkdD_tno10 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE-dD_tno10_prom=100ppb_minH=1996.73776ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True, header=0,
+                     names=['peak ID -dD', col_dt_dD,	'start_'+col_dt_dD,	'end_'+col_dt_dD, col_dD,	col_errdD,	'slope_dD',	'r2_dD', 'res_dD',	'n_dD', col_wd+'_dD', col_errwd+'_dD', col_ws+'_dD', col_errws+'_dD'])
+df_pkd13C_tno10 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE-d13C_tno10_prom=100ppb_minH=1996.73776ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True, header=0,
+                     names=['peak ID -d13C', col_dt_d13C,	'start_'+col_dt_d13C,	'end_'+col_dt_d13C, col_d13C,	col_errd13C,	'slope_d13C',	'r2_d13C', 'res_d13C',	'n_d13C', col_wd+'_d13C', col_errwd+'_d13C', col_ws+'_d13C', col_errws+'_d13C'])
+df_PKE_tno10 = pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/2021-01-12 data_signatures/PKE_tno10_prom=100ppb_minH=1996.73776ppb_n=3.csv',  sep=',', index_col=0, parse_dates=[1,2,3], dayfirst=True, keep_date_col=True)
+
 #%%
 # Merge the scenaris in one list
 df_pkdD_edgar = [df_pkdD_edgar5, df_pkdD_edgar6, df_pkdD_edgar7, df_pkdD_edgar8]
@@ -182,20 +206,20 @@ df_PKE_tno = [df_PKE_tno5, df_PKE_tno6, df_PKE_tno7, df_PKE_tno8]
 
 def see_peak(t1,t2,sub):
     #f=fg.overview_pk(df_IRMS[t1:t2], [df_PKE], [df_PKE_edgar3, df_PKE_tno3], [df_edgar[t1:t2], df_tno[t1:t2]], names=['obs.', 'EDGAR calc3', 'TNO calc3'])
-    #f_edgar=fg.overview_pk(df_IRMS[t1:t2], [df_PKE], [df_PKE_edgar5], [df_edgar[t1:t2]], names=['obs.', 'EDGAR v5.0'])
-    #f_tno=fg.overview_pk(df_IRMS[t1:t2], [df_PKE], [df_PKE_tno5], [df_tno[t1:t2]], names=['obs.', 'TNO-CAMS v4.2'])
+    f_edgar=fg.overview_pk(df_IRMS[t1:t2], [df_PKE], [df_PKE_edgar6], [df_edgar[t1:t2]], names=['obs.', 'EDGAR v5.0'])
+    f_tno=fg.overview_pk(df_IRMS[t1:t2], [df_PKE], [df_PKE_tno6], [df_tno[t1:t2]], names=['obs.', 'CAMS-REG-GHG v4.2'])
     # For assessing different scenari
-    f_edgar=fg.overview_pk(df_IRMS[t1:t2], [df_PKE], [df_PKE_edgar5, df_PKE_edgar6, df_PKE_edgar7, df_PKE_edgar8], [df_edgar[t1:t2]], names=['obs.', 'EDGAR v5.0 calc5', 'EDGAR v5.0 calc6', 'EDGAR v5.0 calc7', 'EDGAR v5.0 calc8'])
-    f_tno=fg.overview_pk(df_IRMS[t1:t2], [df_PKE], [df_PKE_tno5, df_PKE_tno6, df_PKE_tno7, df_PKE_tno8], [df_tno[t1:t2]], names=['obs.', 'TNO-CAMS v4.2 calc5', 'TNO-CAMS v4.2 calc6', 'TNO-CAMS v4.2 calc7', 'TNO-CAMS v4.2 calc8'])
+    #f_edgar=fg.overview_pk(df_IRMS[t1:t2], [df_PKE], [df_PKE_edgar5, df_PKE_edgar6, df_PKE_edgar9, df_PKE_edgar10], [df_edgar[t1:t2]], names=['obs.', 'EDGAR v5.0 calc5', 'EDGAR v5.0 calc6', 'EDGAR v5.0 calc9', 'EDGAR v5.0 calc10'])
+    #f_tno=fg.overview_pk(df_IRMS[t1:t2], [df_PKE], [df_PKE_tno5, df_PKE_tno6, df_PKE_tno9, df_PKE_tno10], [df_tno[t1:t2]], names=['obs.', 'CAMS-REG v4.2 calc5', 'CAMS-REG v4.2 calc6', 'CAMS-REG v4.2 calc9', 'CAMS-REG v4.2 calc10'])
     
     return f_edgar, f_tno
 
 def save_peak(t1,t2,sub,f_edgar, f_tno):
     df_IRMS[t1:t2].to_csv(t_path+today+'subset_'+sub+'_IRMS.csv', encoding=encoding)
-    sub_PKE=pd.concat([df_pkdD.loc[t1:t2], df_pkd13C.loc[t1:t2]], axis=1, ignore_index=True)
+    #sub_PKE=pd.concat([df_pkdD.loc[t1:t2], df_pkd13C.loc[t1:t2]], axis=1, ignore_index=True)
     #sub_PKE.to_csv(t_path+today+'subset_'+sub+'_peaks-original.csv', encoding=encoding)
-    f_edgar[0].savefig(f_path+today+'overview_peak_'+sub+'_EDGAR-scenari.png', dpi=100, transparent=True, bbox_inches = 'tight', pad_inches = 0)
-    f_tno[0].savefig(f_path+today+'overview_peak_'+sub+'_TNO-scenari.png', dpi=100, transparent=True, bbox_inches = 'tight', pad_inches = 0)
+    f_edgar[0].savefig(f_path+today+'overview_peak_'+sub+'_EDGAR-calc6.png', dpi=100, transparent=True, bbox_inches = 'tight', pad_inches = 0)
+    f_tno[0].savefig(f_path+today+'overview_peak_'+sub+'_TNO-calc6.png', dpi=100, transparent=True, bbox_inches = 'tight', pad_inches = 0)
     return
 
 #%%
@@ -298,7 +322,8 @@ save_peak(s6t1, s6t2, s6, fs6)
 s7='Dec-bigwind'
 s7t1='2018-12-22 00:00:00'
 s7t2='2019-01-01 00:00:00'
-fs7=see_peak(s7t1, s7t2, s7)
+fs7_edgar, fs7_tno=see_peak(s7t1, s7t2, s7)
+save_peak(s7t1,s7t2,s7,fs7_edgar,fs7_tno)
 
 # January peak serie -BAD
 s8='Jan-serie'
@@ -323,7 +348,8 @@ save_peak(s10t1,s10t2,s10,fs10_edgar, fs10_tno)
 s11='March-serie'
 s11t1='2019-03-01 00:00:00'
 s11t2='2019-03-15 00:00:00'
-fs11=see_peak(s11t1, s11t2, s11)
+fs11_edgar, fs11_tno=see_peak(s11t1, s11t2, s11)
+save_peak(s11t1,s11t2,s11,fs11_edgar,fs11_tno)
 
 #%%
 #fig = plt.figure(figsize=(10,10))

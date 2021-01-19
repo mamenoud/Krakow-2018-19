@@ -140,13 +140,21 @@ sigs_d13C_calc8 = [-63, -51.6, -48.5, -50.6, -47.6, -48.5, -48.5, -48.5, -73.2, 
 sigs_dD_calc8 = [-359, -299, -193, -192, -194, -193, -193, -193, -323, -90]
 d13C_edgar_calc8, d13C_tno_calc8, dD_edgar_calc8, dD_tno_calc8 = model_isotopes(sigs_d13C_calc8, sigs_dD_calc8, 'calc8')
 
+sigs_d13C_calc9 = [-63, -51.6, -48.5, -50.6, -47.6, -48.5, -36.6, -32.1, -73.2, -47.8]
+sigs_dD_calc9 = [-359, -299, -193, -192, -194, -193, -165, -185, -323, -90]
+d13C_edgar_calc9, d13C_tno_calc9, dD_edgar_calc9, dD_tno_calc9 = model_isotopes(sigs_d13C_calc9, sigs_dD_calc9, 'calc9')
+
+sigs_d13C_calc10 = [-63, -51.6, -48.5, -50.6, -47.6, -48.5, -36.6, -48.5, -73.2, -47.8]
+sigs_dD_calc10 = [-359, -299, -193, -192, -194, -193, -165, -193, -323, -90]
+d13C_edgar_calc10, d13C_tno_calc10, dD_edgar_calc10, dD_tno_calc10 = model_isotopes(sigs_d13C_calc10, sigs_dD_calc10, 'calc10')
+
 # Start from previous calc configuration
 #df_edgar=pd.read_table(t_path+'model/old/Krakow_CH4_EDGARv50_processed_dec2020.csv', sep=',', index_col=0, parse_dates=True, keep_date_col=True)
 #df_tno=pd.read_table(t_path+'model/old/Krakow_CH4_TNO_CAMS_REGv221_processed_dec2020.csv',sep=',', index_col=0, parse_dates=True, keep_date_col=True)
 
 # And add the new calc configurations
-df_edgar=edgar_ch4.join(pd.concat([d13C_edgar_calc5, dD_edgar_calc5, d13C_edgar_calc6, dD_edgar_calc6, d13C_edgar_calc7, dD_edgar_calc7, d13C_edgar_calc8, dD_edgar_calc8], axis=1))
-df_tno=tno_ch4.join(pd.concat([d13C_tno_calc5, dD_tno_calc5, d13C_tno_calc6, dD_tno_calc6, d13C_tno_calc7, dD_tno_calc7, d13C_tno_calc8, dD_tno_calc8], axis=1))
+df_edgar=edgar_ch4.join(pd.concat([d13C_edgar_calc5, dD_edgar_calc5, d13C_edgar_calc6, dD_edgar_calc6, d13C_edgar_calc7, dD_edgar_calc7, d13C_edgar_calc8, dD_edgar_calc8, d13C_edgar_calc9, dD_edgar_calc9, d13C_edgar_calc10, dD_edgar_calc10], axis=1))
+df_tno=tno_ch4.join(pd.concat([d13C_tno_calc5, dD_tno_calc5, d13C_tno_calc6, dD_tno_calc6, d13C_tno_calc7, dD_tno_calc7, d13C_tno_calc8, dD_tno_calc8, d13C_tno_calc9, dD_tno_calc9, d13C_tno_calc10, dD_tno_calc10], axis=1))
 
 #%%
 #########################
@@ -184,7 +192,7 @@ def eval_model(df_model, inventory, scenari):
     
     return
     
-scenari = ['calc5', 'calc6', 'calc7', 'calc8']
+scenari = ['calc5', 'calc6', 'calc7', 'calc8', 'calc9', 'calc10']
 eval_model(df_edgar, 'EDGAR', scenari)
 eval_model(df_tno, 'TNO', scenari)
 
@@ -212,3 +220,4 @@ df_Wmod=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/Modeled/wind
 
 df_edgar.join(df_Wmod).to_csv(t_path+'model/Krakow_CH4_EDGARv50_processed.csv')
 df_tno.join(df_Wmod).to_csv(t_path+'model/Krakow_CH4_TNO_CAMS_REGv221_processed.csv')
+

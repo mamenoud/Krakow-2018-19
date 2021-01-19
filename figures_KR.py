@@ -135,9 +135,9 @@ def correlation(x, y, namex, namey, leg=None, xy=False):
         
         #report r2 in legend
         if leg is not None:
-            str_lin = leg[i]+', '+'r= '+str(round(r_value, 3))
+            str_lin = leg[i]+', '+'r2= '+str(round(r_value, 3))
         else:
-            str_lin = 'r= '+str(round(r_value, 3))
+            str_lin = 'r2= '+str(round(r_value, 3))
     
         #plot the 1:1 line
         if xy==False:
@@ -486,12 +486,12 @@ def overview_pk(data_obs, data_obs_pk, data_model_pk, data_model=None, names=Non
             ns=0
             for s in sources:
                 if s in list(df):
-                    if (s=='FF_gas') or (s=='Other'):
+                    if (s=='FF_gas') or (s=='Other'):       # Lighter colors
                         ax1.bar(x=ch4_added.index, height=df[s], bottom=ch4_added, width=0.045, color=sources_c[ns], alpha=0.7, label=s)#, hatch='//')
                         s_labels.append(mpatches.Patch(color=sources_c[ns], alpha=0.7, label=s))
-                    else:
+                    else: 
                         ax1.bar(x=ch4_added.index, height=df[s], bottom=ch4_added, width=0.045, color=sources_c[ns], alpha=1, label=s)
-                        if (s=='Agriculture') or (s=='Waste') or (s=='FF_coal') or (s=='ENB'):
+                        if (s=='Agriculture') or (s=='Waste') or (s=='FF_coal') or (s=='ENB') or (s=='FF'):          # Darker colors
                             s_labels.append(mpatches.Patch(color=sources_c[ns], label=s))
                     ch4_added=ch4_added+df[s]
                 ns=ns+1  
@@ -564,11 +564,11 @@ def overview_pk(data_obs, data_obs_pk, data_model_pk, data_model=None, names=Non
     ax1.legend(handles=s_labels, fontsize=12, loc='lower left', bbox_to_anchor=(0.85, 0.5))
     
     # Wind colorbar
-    cax4 = figure.add_axes([0.73, 0.285, 0.15, 0.015])
-    sm = ScalarMappable(cmap=cmocean.cm.balance, norm=norm)
-    sm.set_array([])
-    cbar = plt.colorbar(sm, cax=cax4, orientation='horizontal', ticks=[0, 180, 360])
-    cbar.set_label('Wind dir. [º]', rotation=0,labelpad=0)
+    #cax4 = figure.add_axes([0.73, 0.285, 0.15, 0.015])
+    #sm = ScalarMappable(cmap=cmocean.cm.balance, norm=norm)
+    #sm.set_array([])
+    #cbar = plt.colorbar(sm, cax=cax4, orientation='horizontal', ticks=[0, 180, 360])
+    #cbar.set_label('Wind dir. [º]', rotation=0,labelpad=0)
     
     ax1.grid(which= 'major', axis='both', linestyle='-', linewidth=0.4)
     ax2.grid(which= 'major', axis='both', linestyle='-', linewidth=0.4)
@@ -618,13 +618,13 @@ def overview(data_obs, data_P=None, data_CHIM=None, data_MH=None, suf=''):
     if data_P is not None:
         data_P.plot(y=col_P, ax=ax1, color=cP, lw=0.7, label='CRDS')
         
-    data_obs.plot(y=col_MR_d13C, ax=ax1, markersize=1, style='o',  mec='none', mfc=web_red, legend=False)#, label='IRMS')
-    data_obs.plot(y=col_MR_d13C+'_vo', ax=ax1, markersize=1, style='o',  mec=c13C, mfc=c13C, legend=False)#, label='IRMS')
+    data_obs.plot(y=col_MR_d13C, ax=ax1, markersize=1, style='o',  mec=web_blue, mfc=web_blue, legend=False)#, label='IRMS')
+    #data_obs.plot(y=col_MR_d13C+'_vo', ax=ax1, markersize=1, style='o',  mec=c13C, mfc=c13C, legend=False)#, label='IRMS')
     
     data_obs.plot(y=col_d13C, markersize=1, style='o', legend=False, ax=ax2, mec=c13C, mfc=c13C)
     
-    data_obs.plot(y=col_MR_dD, ax=ax1, markersize=1, style='o',  mec='none', mfc=web_red, legend=False)
-    data_obs.plot(y=col_MR_dD+'_vo', ax=ax1, markersize=1, style='o',  mec=cD, mfc=cD, legend=False)
+    data_obs.plot(y=col_MR_dD, ax=ax1, markersize=1, style='o',  mec=web_blue, mfc=web_blue, legend=False)
+    #data_obs.plot(y=col_MR_dD+'_vo', ax=ax1, markersize=1, style='o',  mec=cD, mfc=cD, legend=False)
     
     data_obs.plot(y=col_dD, markersize=1, style='o', legend=False, ax=ax3, mec=cD, mfc=cD)
     
@@ -637,9 +637,9 @@ def overview(data_obs, data_P=None, data_CHIM=None, data_MH=None, suf=''):
             i=i+1
             
     if data_MH is not None:
-        data_MH.plot(y='CH4', ax=ax1, color=c_MH, lw=0.7, legend=False)#, label='Mace Head')
+        data_MH.plot(y='CH4', ax=ax1, color=vertclair, lw=2, legend=False)#, label='Mace Head')
         
-    ax1.set_ylabel('x(CH4) [ppb]')
+    ax1.set_ylabel(strMR)
     ax1.yaxis.set_major_locator(plt.MaxNLocator(5))
     #ax1.legend(['[CH4] IRMS '+d13C, '[CH4] IRMS '+dD], markerscale=5, loc=1, fontsize='x-small')
     
@@ -715,7 +715,7 @@ def top_diagrams(list_df, list_labels, sufs, ambient=None, patches=True, lit_coa
     
     # Axis limits
     lim_dD=[-370, -82]
-    lim_d13C=[-77, -38]
+    lim_d13C=[-77, -30]
     
     # Define the boundaries of the patches, and their color
         
@@ -761,6 +761,12 @@ def top_diagrams(list_df, list_labels, sufs, ambient=None, patches=True, lit_coa
     y_pl=[-81, -81, -232, -232]
     xy_pl=(-20.5,-165.5)
     [w_pl, h_pl]=[11.5,75.5]
+    #c_p='xkcd:neon yellow'
+    
+    xk_p=[-32, -9, -9, -32]             # KRK pyrogenic
+    yk_p=[-81, -81, -232, -232]
+    xyk_p=(-31.2,-185)
+    [wk_p, hk_p]=[1,4.2]
     #c_p='xkcd:neon yellow'
     
     xk_w=[-56, -45.4, -45.4, -56]       # KRK waste
@@ -824,7 +830,7 @@ def top_diagrams(list_df, list_labels, sufs, ambient=None, patches=True, lit_coa
     #ell_ff=mpatches.Ellipse(xy_ff, w_ff, h_ff, ls='--', color=web_red, alpha=0.5, label='Fossil fuels')
     ell_gas=mpatches.Ellipse(xyk_gas, wk_gas, hk_gas, ls='--', color=cm_red, alpha=0.2, label='Natural gas')
     ell_coal=mpatches.Ellipse(xyk_coal, wk_coal, hk_coal, ls='--', color=web_red, alpha=0.2, label='USCB coal mines')
-     #ell_pl=mpatches.Ellipse(xy_pl, w_pl, h_pl, ls='--', color=cm_red, alpha=0.2, label='Pyrogenic') #fill=False, ec='gray'))
+    ell_p=mpatches.Ellipse(xyk_p, wk_p, hk_p, ls='--', color='k', alpha=1, label='Pyrogenic') #fill=False, ec='gray'))
     
     # Litterature (dashed)
     #ell_w=mpatches.Ellipse(xy_w, w_w, h_w, ls='--', ec=vertclair, fill=False, label='Waste')
@@ -841,7 +847,7 @@ def top_diagrams(list_df, list_labels, sufs, ambient=None, patches=True, lit_coa
     top_top.add_patch(ell_coal)
     top_top.add_patch(ell_gas)
     #top_top.add_patch(ell_ff)
-    #top_top.add_patch(ell_pl)
+    top_top.add_patch(ell_p)
     #top_top.add_patch(ell_a)
     #top_top.add_patch(ell_w)
     #top_top.add_patch(ell_lit)
@@ -873,6 +879,7 @@ def top_diagrams(list_df, list_labels, sufs, ambient=None, patches=True, lit_coa
     top_top.annotate("Waste", xy=xyk_w, xytext=(70, -60), textcoords='offset points', color=vertclair)
     top_top.annotate("Network gas", xy=xyk_gas, xytext=(6, 60), textcoords='offset points', color=cm_red)#, arrowprops=dict(arrowstyle="->",connectionstyle="arc3",color=cm_red))
     top_top.annotate("USCB coal mines", xy=xyk_coal, xytext=(-240, -70), textcoords='offset points', color=web_red)
+    top_top.annotate("Combustion", xy=xyk_p, xytext=(-90, -25), textcoords='offset points', color='k')
     top_top.annotate("Ambient", xy=(ambient['avg_d13C'], ambient['avg_dD']), xytext=(-90, -10), textcoords='offset points', color='k')
     
     # Arrange the axis limits

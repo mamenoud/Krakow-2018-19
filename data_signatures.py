@@ -90,7 +90,7 @@ errd13C=0.1
 
 f_path = '/Users/malika/surfdrive/Data/Krakow/Roof air/figures/'
 t_path = '/Users/malika/surfdrive/Data/Krakow/Roof air/tables/'
-today='2021-01-08 data_signatures/'
+today='2021-01-12 data_signatures/'
 
 #%%
 ############################################
@@ -125,6 +125,12 @@ dfd13C_edgar7 = pd.concat([df_edgar['Total'], df_edgar['d13C calc7'], df_edgar[c
 dfdD_edgar8 = pd.concat([df_edgar['Total'], df_edgar['dD calc8'], df_edgar[col_wd], df_edgar[col_ws]], axis=1)
 dfd13C_edgar8 = pd.concat([df_edgar['Total'], df_edgar['d13C calc8'], df_edgar[col_wd], df_edgar[col_ws]], axis=1)
 
+dfdD_edgar9 = pd.concat([df_edgar['Total'], df_edgar['dD calc9'], df_edgar[col_wd], df_edgar[col_ws]], axis=1)
+dfd13C_edgar9 = pd.concat([df_edgar['Total'], df_edgar['d13C calc9'], df_edgar[col_wd], df_edgar[col_ws]], axis=1)
+
+dfdD_edgar10 = pd.concat([df_edgar['Total'], df_edgar['dD calc10'], df_edgar[col_wd], df_edgar[col_ws]], axis=1)
+dfd13C_edgar10 = pd.concat([df_edgar['Total'], df_edgar['d13C calc10'], df_edgar[col_wd], df_edgar[col_ws]], axis=1)
+
 df_tno=pd.read_table('/Users/malika/surfdrive/Data/Krakow/Roof air/tables/model/Krakow_CH4_TNO_CAMS_REGv221_processed.csv', sep=',', index_col=0, parse_dates=True, dayfirst=True, keep_date_col=True)
 
 dfdD_tno5 = pd.concat([df_tno['Total'], df_tno['dD calc5'], df_tno[col_wd], df_tno[col_ws]], axis=1)
@@ -138,6 +144,12 @@ dfd13C_tno7 = pd.concat([df_tno['Total'], df_tno['d13C calc7'], df_tno[col_wd], 
 
 dfdD_tno8 = pd.concat([df_tno['Total'], df_tno['dD calc8'], df_tno[col_wd], df_tno[col_ws]], axis=1)
 dfd13C_tno8 = pd.concat([df_tno['Total'], df_tno['d13C calc8'], df_tno[col_wd], df_tno[col_ws]], axis=1)
+
+dfdD_tno9 = pd.concat([df_tno['Total'], df_tno['dD calc9'], df_tno[col_wd], df_tno[col_ws]], axis=1)
+dfd13C_tno9 = pd.concat([df_tno['Total'], df_tno['d13C calc9'], df_tno[col_wd], df_tno[col_ws]], axis=1)
+
+dfdD_tno10 = pd.concat([df_tno['Total'], df_tno['dD calc10'], df_tno[col_wd], df_tno[col_ws]], axis=1)
+dfd13C_tno10 = pd.concat([df_tno['Total'], df_tno['d13C calc10'], df_tno[col_wd], df_tno[col_ws]], axis=1)
 
 #%%
 ############################################
@@ -183,6 +195,16 @@ reg_d13C_edgar8 = fun.regression(dfd13C_edgar8, iso='13C', graph=True, model='ed
 reg_dD_tno8 = fun.regression(dfdD_tno8, iso='D', graph=True, model='tno')
 reg_d13C_tno8 = fun.regression(dfd13C_tno8, iso='13C', graph=True, model='tno')
 
+reg_dD_edgar9 = fun.regression(dfdD_edgar9, iso='D', graph=True, model='edgar')
+reg_d13C_edgar9 = fun.regression(dfd13C_edgar9, iso='13C', graph=True, model='edgar')
+reg_dD_tno9 = fun.regression(dfdD_tno9, iso='D', graph=True, model='tno')
+reg_d13C_tno9 = fun.regression(dfd13C_tno9, iso='13C', graph=True, model='tno')
+
+reg_dD_edgar10 = fun.regression(dfdD_edgar10, iso='D', graph=True, model='edgar')
+reg_d13C_edgar10 = fun.regression(dfd13C_edgar10, iso='13C', graph=True, model='edgar')
+reg_dD_tno10 = fun.regression(dfdD_tno10, iso='D', graph=True, model='tno')
+reg_d13C_tno10 = fun.regression(dfd13C_tno10, iso='13C', graph=True, model='tno')
+
 # Model regression - Miller-Tans plots
 MT_dD_edgar5 = fun.regression(dfdD_edgar5, iso='D', graph=True, model='edgar', MT=True)
 MT_d13C_edgar5 = fun.regression(dfd13C_edgar5, iso='13C', graph=True, model='edgar', MT=True)
@@ -204,14 +226,24 @@ MT_d13C_edgar8 = fun.regression(dfd13C_edgar8, iso='13C', graph=True, model='edg
 MT_dD_tno8 = fun.regression(dfdD_tno8, iso='D', graph=True, model='tno', MT=True)
 MT_d13C_tno8 = fun.regression(dfd13C_tno8, iso='13C', graph=True, model='tno', MT=True)
 
+MT_dD_edgar9 = fun.regression(dfdD_edgar9, iso='D', graph=True, model='edgar', MT=True)
+MT_d13C_edgar9 = fun.regression(dfd13C_edgar9, iso='13C', graph=True, model='edgar', MT=True)
+MT_dD_tno9 = fun.regression(dfdD_tno9, iso='D', graph=True, model='tno', MT=True)
+MT_d13C_tno9 = fun.regression(dfd13C_tno9, iso='13C', graph=True, model='tno', MT=True)
+
+MT_dD_edgar10 = fun.regression(dfdD_edgar10, iso='D', graph=True, model='edgar', MT=True)
+MT_d13C_edgar10 = fun.regression(dfd13C_edgar10, iso='13C', graph=True, model='edgar', MT=True)
+MT_dD_tno10 = fun.regression(dfdD_tno10, iso='D', graph=True, model='tno', MT=True)
+MT_d13C_tno10 = fun.regression(dfd13C_tno10, iso='13C', graph=True, model='tno', MT=True)
+
 # DataFrame to compare the different x(CH4) corrections
-df_sig = pd.DataFrame({'KP sig '+col_d13C: [reg_d13C[1], reg_d13C_v2[1], reg_d13C_vo[1], reg_d13C_edgar5[1], reg_d13C_tno5[1], reg_d13C_edgar6[1], reg_d13C_tno6[1], reg_d13C_edgar7[1], reg_d13C_tno7[1], reg_d13C_edgar8[1], reg_d13C_tno8[1]], 'KP sig '+col_dD: [reg_dD[1], reg_dD_v2[1], reg_dD_vo[1], reg_dD_edgar5[1], reg_dD_tno5[1], reg_dD_edgar6[1], reg_dD_tno6[1], reg_dD_edgar7[1], reg_dD_tno7[1], reg_dD_edgar8[1], reg_dD_tno8[1]],
-                       'KP sig '+col_errd13C: [reg_d13C[3], reg_d13C_v2[3], reg_d13C_vo[3], reg_d13C_edgar5[3], reg_d13C_tno5[3], reg_d13C_edgar6[3], reg_d13C_tno6[3], reg_d13C_edgar7[3], reg_d13C_tno7[3], reg_d13C_edgar8[3], reg_d13C_tno8[3]], 'KP sig '+col_errdD: [reg_dD[3], reg_dD_v2[3], reg_dD_vo[3], reg_dD_edgar5[3], reg_dD_tno5[3], reg_dD_edgar6[3], reg_dD_tno6[3], reg_dD_edgar7[3], reg_dD_tno7[3], reg_dD_edgar8[3], reg_dD_tno8[3]], 
-                       'KP slope '+col_d13C: [reg_d13C[0], reg_d13C_v2[0], reg_d13C_vo[0], reg_d13C_edgar5[0], reg_d13C_tno5[0], reg_d13C_edgar6[0], reg_d13C_tno6[0], reg_d13C_edgar7[0], reg_d13C_tno7[0], reg_d13C_edgar8[0], reg_d13C_tno8[0]], 'KP slope '+col_dD: [reg_dD[0], reg_dD_v2[0], reg_dD_vo[0], reg_dD_edgar5[0], reg_dD_tno5[0], reg_dD_edgar6[0], reg_dD_tno6[0], reg_dD_edgar7[0], reg_dD_tno7[0], reg_dD_edgar8[0], reg_dD_tno8[0]],
-                       'MT sig '+col_d13C: [MT_d13C[0], MT_d13C_v2[0], MT_d13C_vo[0], MT_d13C_edgar5[0], MT_d13C_tno5[0], MT_d13C_edgar6[0], MT_d13C_tno6[0], MT_d13C_edgar7[0], MT_d13C_tno7[0], MT_d13C_edgar8[0], MT_d13C_tno8[0]], 'MT sig '+col_dD: [MT_dD[0], MT_dD_v2[0], MT_dD_vo[0], MT_dD_edgar5[0], MT_dD_tno5[0], MT_dD_edgar6[0], MT_dD_tno6[0], MT_dD_edgar7[0], MT_dD_tno7[0], MT_dD_edgar8[0], MT_dD_tno8[0]],
-                       'MT sig '+col_errd13C: [MT_d13C[2], MT_d13C_v2[2], MT_d13C_vo[2], MT_d13C_edgar5[2], MT_d13C_tno5[2], MT_d13C_edgar6[2], MT_d13C_tno6[2], MT_d13C_edgar7[2], MT_d13C_tno7[2], MT_d13C_edgar8[2], MT_d13C_tno8[2]], 'MT sig '+col_errdD: [MT_dD[2], MT_dD_v2[2], MT_dD_vo[2], MT_dD_edgar5[2], MT_dD_tno5[2], MT_dD_edgar6[2], MT_dD_tno6[2], MT_dD_edgar7[2], MT_dD_tno7[2], MT_dD_edgar8[2], MT_dD_tno8[2]],
-                       'MT intercept '+col_d13C: [MT_d13C[1], MT_d13C_v2[1], MT_d13C_vo[1], MT_d13C_edgar5[1], MT_d13C_tno5[1], MT_d13C_edgar6[1], MT_d13C_tno6[1], MT_d13C_edgar7[1], MT_d13C_tno7[1], MT_d13C_edgar8[1], MT_d13C_tno8[1]], 'MT intercept '+col_dD: [MT_dD[1], MT_dD_v2[1], MT_dD_vo[1], MT_dD_edgar5[1], MT_dD_tno5[1], MT_dD_edgar6[1], MT_dD_tno6[1], MT_dD_edgar7[1], MT_dD_tno7[1], MT_dD_edgar8[1], MT_dD_tno8[1]]},
-                       index=['original', 'offset', 'cleared', 'EDGAR-calc5', 'TNO-calc5', 'EDGAR-calc6', 'TNO-calc6', 'EDGAR-calc7', 'TNO-calc7', 'EDGAR-calc8', 'TNO-calc8'])
+df_sig = pd.DataFrame({'KP sig '+col_d13C: [reg_d13C[1], reg_d13C_v2[1], reg_d13C_vo[1], reg_d13C_edgar5[1], reg_d13C_tno5[1], reg_d13C_edgar6[1], reg_d13C_tno6[1], reg_d13C_edgar7[1], reg_d13C_tno7[1], reg_d13C_edgar8[1], reg_d13C_tno8[1], reg_d13C_edgar9[1], reg_d13C_tno9[1], reg_d13C_edgar10[1], reg_d13C_tno10[1]], 'KP sig '+col_dD: [reg_dD[1], reg_dD_v2[1], reg_dD_vo[1], reg_dD_edgar5[1], reg_dD_tno5[1], reg_dD_edgar6[1], reg_dD_tno6[1], reg_dD_edgar7[1], reg_dD_tno7[1], reg_dD_edgar8[1], reg_dD_tno8[1], reg_dD_edgar9[1], reg_dD_tno9[1], reg_dD_edgar10[1], reg_dD_tno10[1]],
+                       'KP sig '+col_errd13C: [reg_d13C[3], reg_d13C_v2[3], reg_d13C_vo[3], reg_d13C_edgar5[3], reg_d13C_tno5[3], reg_d13C_edgar6[3], reg_d13C_tno6[3], reg_d13C_edgar7[3], reg_d13C_tno7[3], reg_d13C_edgar8[3], reg_d13C_tno8[3], reg_d13C_edgar9[3], reg_d13C_tno9[3], reg_d13C_edgar10[3], reg_d13C_tno10[3]], 'KP sig '+col_errdD: [reg_dD[3], reg_dD_v2[3], reg_dD_vo[3], reg_dD_edgar5[3], reg_dD_tno5[3], reg_dD_edgar6[3], reg_dD_tno6[3], reg_dD_edgar7[3], reg_dD_tno7[3], reg_dD_edgar8[3], reg_dD_tno8[3], reg_dD_edgar9[3], reg_dD_tno9[3], reg_dD_edgar10[3], reg_dD_tno10[3]], 
+                       'KP slope '+col_d13C: [reg_d13C[0], reg_d13C_v2[0], reg_d13C_vo[0], reg_d13C_edgar5[0], reg_d13C_tno5[0], reg_d13C_edgar6[0], reg_d13C_tno6[0], reg_d13C_edgar7[0], reg_d13C_tno7[0], reg_d13C_edgar8[0], reg_d13C_tno8[0], reg_d13C_edgar9[0], reg_d13C_tno9[0], reg_d13C_edgar10[0], reg_d13C_tno10[0]], 'KP slope '+col_dD: [reg_dD[0], reg_dD_v2[0], reg_dD_vo[0], reg_dD_edgar5[0], reg_dD_tno5[0], reg_dD_edgar6[0], reg_dD_tno6[0], reg_dD_edgar7[0], reg_dD_tno7[0], reg_dD_edgar8[0], reg_dD_tno8[0], reg_dD_edgar9[0], reg_dD_tno9[0], reg_dD_edgar10[0], reg_dD_tno10[0]],
+                       'MT sig '+col_d13C: [MT_d13C[0], MT_d13C_v2[0], MT_d13C_vo[0], MT_d13C_edgar5[0], MT_d13C_tno5[0], MT_d13C_edgar6[0], MT_d13C_tno6[0], MT_d13C_edgar7[0], MT_d13C_tno7[0], MT_d13C_edgar8[0], MT_d13C_tno8[0], MT_d13C_edgar9[0], MT_d13C_tno9[0], MT_d13C_edgar10[0], MT_d13C_tno10[0]], 'MT sig '+col_dD: [MT_dD[0], MT_dD_v2[0], MT_dD_vo[0], MT_dD_edgar5[0], MT_dD_tno5[0], MT_dD_edgar6[0], MT_dD_tno6[0], MT_dD_edgar7[0], MT_dD_tno7[0], MT_dD_edgar8[0], MT_dD_tno8[0], MT_dD_edgar9[0], MT_dD_tno9[0], MT_dD_edgar10[0], MT_dD_tno10[0]],
+                       'MT sig '+col_errd13C: [MT_d13C[2], MT_d13C_v2[2], MT_d13C_vo[2], MT_d13C_edgar5[2], MT_d13C_tno5[2], MT_d13C_edgar6[2], MT_d13C_tno6[2], MT_d13C_edgar7[2], MT_d13C_tno7[2], MT_d13C_edgar8[2], MT_d13C_tno8[2], MT_d13C_edgar9[2], MT_d13C_tno9[2], MT_d13C_edgar10[2], MT_d13C_tno10[2]], 'MT sig '+col_errdD: [MT_dD[2], MT_dD_v2[2], MT_dD_vo[2], MT_dD_edgar5[2], MT_dD_tno5[2], MT_dD_edgar6[2], MT_dD_tno6[2], MT_dD_edgar7[2], MT_dD_tno7[2], MT_dD_edgar8[2], MT_dD_tno8[2], MT_dD_edgar9[2], MT_dD_tno9[2], MT_dD_edgar10[2], MT_dD_tno10[2]],
+                       'MT intercept '+col_d13C: [MT_d13C[1], MT_d13C_v2[1], MT_d13C_vo[1], MT_d13C_edgar5[1], MT_d13C_tno5[1], MT_d13C_edgar6[1], MT_d13C_tno6[1], MT_d13C_edgar7[1], MT_d13C_tno7[1], MT_d13C_edgar8[1], MT_d13C_tno8[1], MT_d13C_edgar9[1], MT_d13C_tno9[1], MT_d13C_edgar10[1], MT_d13C_tno10[1]], 'MT intercept '+col_dD: [MT_dD[1], MT_dD_v2[1], MT_dD_vo[1], MT_dD_edgar5[1], MT_dD_tno5[1], MT_dD_edgar6[1], MT_dD_tno6[1], MT_dD_edgar7[1], MT_dD_tno7[1], MT_dD_edgar8[1], MT_dD_tno8[1], MT_dD_edgar9[1], MT_dD_tno9[1], MT_dD_edgar10[1], MT_dD_tno10[1]]},
+                       index=['original', 'offset', 'cleared', 'EDGAR-calc5', 'TNO-calc5', 'EDGAR-calc6', 'TNO-calc6', 'EDGAR-calc7', 'TNO-calc7', 'EDGAR-calc8', 'TNO-calc8', 'EDGAR-calc9', 'TNO-calc9', 'EDGAR-calc10', 'TNO-calc10'])
 df_sig.to_csv(t_path+today+'avg_signatures_corrections_BCES.csv', encoding=encoding)
 
 #%%
@@ -220,8 +252,8 @@ df_sig.to_csv(t_path+today+'avg_signatures_corrections_BCES.csv', encoding=encod
 ############################################
 
 H_obs=np.percentile(df_all[col_MR], 10)
-H_edgar=np.percentile(df_edgar_in['Total'], 10)
-H_tno=np.percentile(df_tno_in['Total'], 10)
+H_edgar=np.percentile(df_edgar['Total'], 10)
+H_tno=np.percentile(df_tno['Total'], 10)
 min_prom = 100
 min_height=H_obs
 
@@ -264,6 +296,18 @@ dfd13C_PKE_edgar8, fd13C_PKE_edgar8, paramsd13C_PKE_edgar8 = fun.extract_peaks(d
 dfdD_PKE_tno8, fdD_PKE_tno8, paramsdD_PKE_tno8 = fun.extract_peaks(dfdD_tno8, 'D', min_prom, H_tno, min_width, h_relative, ind_figs=False, model=1)
 dfd13C_PKE_tno8, fd13C_PKE_tno8, paramsd13C_PKE_tno8 = fun.extract_peaks(dfd13C_tno8, '13C', min_prom, H_tno, min_width, h_relative, ind_figs=False, model=1)
 
+dfdD_PKE_edgar9, fdD_PKE_edgar9, paramsdD_PKE_edgar9 = fun.extract_peaks(dfdD_edgar9, 'D', min_prom, H_edgar, min_width, h_relative, ind_figs=False, model=1)
+dfd13C_PKE_edgar9, fd13C_PKE_edgar9, paramsd13C_PKE_edgar9 = fun.extract_peaks(dfd13C_edgar9, '13C', min_prom, H_edgar, min_width, h_relative, ind_figs=False, model=1)
+
+dfdD_PKE_tno9, fdD_PKE_tno9, paramsdD_PKE_tno9 = fun.extract_peaks(dfdD_tno9, 'D', min_prom, H_tno, min_width, h_relative, ind_figs=False, model=1)
+dfd13C_PKE_tno9, fd13C_PKE_tno9, paramsd13C_PKE_tno9 = fun.extract_peaks(dfd13C_tno9, '13C', min_prom, H_tno, min_width, h_relative, ind_figs=False, model=1)
+
+dfdD_PKE_edgar10, fdD_PKE_edgar10, paramsdD_PKE_edgar10 = fun.extract_peaks(dfdD_edgar10, 'D', min_prom, H_edgar, min_width, h_relative, ind_figs=False, model=1)
+dfd13C_PKE_edgar10, fd13C_PKE_edgar10, paramsd13C_PKE_edgar10 = fun.extract_peaks(dfd13C_edgar10, '13C', min_prom, H_edgar, min_width, h_relative, ind_figs=False, model=1)
+
+dfdD_PKE_tno10, fdD_PKE_tno10, paramsdD_PKE_tno10 = fun.extract_peaks(dfdD_tno10, 'D', min_prom, H_tno, min_width, h_relative, ind_figs=False, model=1)
+dfd13C_PKE_tno10, fd13C_PKE_tno10, paramsd13C_PKE_tno10 = fun.extract_peaks(dfd13C_tno10, '13C', min_prom, H_tno, min_width, h_relative, ind_figs=False, model=1)
+
 #%%
 
 # Clear the PKE peaks from crazy data
@@ -287,6 +331,12 @@ dfd13C_PKE_tno7, dfdD_PKE_tno7 = fun.clear_crazy(dfd13C_PKE_tno7, crazy_d13C, cr
 
 dfd13C_PKE_edgar8, dfdD_PKE_edgar8 = fun.clear_crazy(dfd13C_PKE_edgar8, crazy_d13C, crazy_errd13C, dfdD_PKE_edgar8, crazy_dD, crazy_errdD)
 dfd13C_PKE_tno8, dfdD_PKE_tno8 = fun.clear_crazy(dfd13C_PKE_tno8, crazy_d13C, crazy_errd13C, dfdD_PKE_tno8, crazy_dD, crazy_errdD)
+
+dfd13C_PKE_edgar9, dfdD_PKE_edgar9 = fun.clear_crazy(dfd13C_PKE_edgar9, crazy_d13C, crazy_errd13C, dfdD_PKE_edgar9, crazy_dD, crazy_errdD)
+dfd13C_PKE_tno9, dfdD_PKE_tno9 = fun.clear_crazy(dfd13C_PKE_tno9, crazy_d13C, crazy_errd13C, dfdD_PKE_tno9, crazy_dD, crazy_errdD)
+
+dfd13C_PKE_edgar10, dfdD_PKE_edgar10 = fun.clear_crazy(dfd13C_PKE_edgar10, crazy_d13C, crazy_errd13C, dfdD_PKE_edgar10, crazy_dD, crazy_errdD)
+dfd13C_PKE_tno10, dfdD_PKE_tno10 = fun.clear_crazy(dfd13C_PKE_tno10, crazy_d13C, crazy_errd13C, dfdD_PKE_tno10, crazy_dD, crazy_errdD)
 
 #%%
 # Save PKE data ...
@@ -330,6 +380,18 @@ dfd13C_PKE_edgar8.to_csv(t_path+today+'PKE-d13C_edgar8_'+strPKE_edgar+'.csv', en
 dfdD_PKE_tno8.to_csv(t_path+today+'PKE-dD_tno8_'+strPKE_tno+'.csv', encoding=encoding)
 dfd13C_PKE_tno8.to_csv(t_path+today+'PKE-d13C_tno8_'+strPKE_tno+'.csv', encoding=encoding)
 
+dfdD_PKE_edgar9.to_csv(t_path+today+'PKE-dD_edgar9_'+strPKE_edgar+'.csv', encoding=encoding)
+dfd13C_PKE_edgar9.to_csv(t_path+today+'PKE-d13C_edgar9_'+strPKE_edgar+'.csv', encoding=encoding)
+
+dfdD_PKE_tno9.to_csv(t_path+today+'PKE-dD_tno9_'+strPKE_tno+'.csv', encoding=encoding)
+dfd13C_PKE_tno9.to_csv(t_path+today+'PKE-d13C_tno9_'+strPKE_tno+'.csv', encoding=encoding)
+
+dfdD_PKE_edgar10.to_csv(t_path+today+'PKE-dD_edgar10_'+strPKE_edgar+'.csv', encoding=encoding)
+dfd13C_PKE_edgar10.to_csv(t_path+today+'PKE-d13C_edgar10_'+strPKE_edgar+'.csv', encoding=encoding)
+
+dfdD_PKE_tno10.to_csv(t_path+today+'PKE-dD_tno10_'+strPKE_tno+'.csv', encoding=encoding)
+dfd13C_PKE_tno10.to_csv(t_path+today+'PKE-d13C_tno10_'+strPKE_tno+'.csv', encoding=encoding)
+
 # The datatimes are the exact sames for the model! Because x(ch4) is the same for both isotoopes, and there is no gap in time series.
 # Use another function than concat to have only 1 copy of the time limits of the peaks
 pd.merge(dfdD_PKE_edgar5, dfd13C_PKE_edgar5, on=['DateTime', 'start_DateTime', 'end_DateTime'], suffixes=['_dD', '_d13C']).to_csv(t_path+today+'PKE_edgar5_'+strPKE_edgar+'.csv', encoding=encoding)
@@ -343,6 +405,12 @@ pd.merge(dfdD_PKE_tno7, dfd13C_PKE_tno7, on=['DateTime', 'start_DateTime', 'end_
 
 pd.merge(dfdD_PKE_edgar8, dfd13C_PKE_edgar8, on=['DateTime', 'start_DateTime', 'end_DateTime'], suffixes=['_dD', '_d13C']).to_csv(t_path+today+'PKE_edgar8_'+strPKE_edgar+'.csv', encoding=encoding)
 pd.merge(dfdD_PKE_tno8, dfd13C_PKE_tno8, on=['DateTime', 'start_DateTime', 'end_DateTime'], suffixes=['_dD', '_d13C']).to_csv(t_path+today+'PKE_tno8_'+strPKE_tno+'.csv', encoding=encoding)
+
+pd.merge(dfdD_PKE_edgar9, dfd13C_PKE_edgar9, on=['DateTime', 'start_DateTime', 'end_DateTime'], suffixes=['_dD', '_d13C']).to_csv(t_path+today+'PKE_edgar9_'+strPKE_edgar+'.csv', encoding=encoding)
+pd.merge(dfdD_PKE_tno9, dfd13C_PKE_tno9, on=['DateTime', 'start_DateTime', 'end_DateTime'], suffixes=['_dD', '_d13C']).to_csv(t_path+today+'PKE_tno9_'+strPKE_tno+'.csv', encoding=encoding)
+
+pd.merge(dfdD_PKE_edgar10, dfd13C_PKE_edgar10, on=['DateTime', 'start_DateTime', 'end_DateTime'], suffixes=['_dD', '_d13C']).to_csv(t_path+today+'PKE_edgar10_'+strPKE_edgar+'.csv', encoding=encoding)
+pd.merge(dfdD_PKE_tno10, dfd13C_PKE_tno10, on=['DateTime', 'start_DateTime', 'end_DateTime'], suffixes=['_dD', '_d13C']).to_csv(t_path+today+'PKE_tno10_'+strPKE_tno+'.csv', encoding=encoding)
 
 #%%
 # ... & figures

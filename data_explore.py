@@ -102,7 +102,7 @@ plt.rcParams.update({'font.size': 12, 'font.sans-serif':'Helvetica'})
 
 f_path = '/Users/malika/surfdrive/Data/Krakow/Roof air/figures/'
 t_path = '/Users/malika/surfdrive/Data/Krakow/Roof air/tables/'
-today='2020-12-08 data_explore/'
+today='2021-01-13 data_explore/'
 
 #%%
 ###############################################################################
